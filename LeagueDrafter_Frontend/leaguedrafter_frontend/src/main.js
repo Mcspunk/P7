@@ -3,10 +3,15 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+import VueMaterial from 'vue-material'
+import 'vue-material/dist/vue-material.min.css'
+import 'vue-material/dist/theme/default-dark.css' // This line here
+import { MdButton, MdContent, MdTabs, MdIcon } from 'vue-material/dist/components'
+Vue.use(MdButton)
+Vue.use(VueMaterial)
+Vue.use(MdContent)
+Vue.use(MdTabs)
 
-Vue.use(ElementUI);
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

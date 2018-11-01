@@ -1,7 +1,7 @@
 <template>
   <div class="container-redPlayer">
-    <h3>{{this.role}}</h3>
-    <ChampionBox class="champBox" :champion="this.champion"> </ChampionBox>
+      <div class="roleText md-body2">{{this.role}}</div>
+      <champion-box :champion="this.champion" class="champBox"> </champion-box>
   </div>
 </template>
 
@@ -21,24 +21,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container-bluePlayer{
-  position:relative;
-  width:100%;
-  float:left;
-  h3{float:left}
-
-  .champBox{
-    float:right;
-  }
-}
 
 .container-redPlayer{
   position:relative;
-  width:100%;
-  float:right;
-  h3{float:right}
+  width:75%;
+  float: left;
+  h3{float: inherit;}
 
   .champBox{
+    
     float:left;
   }
 }

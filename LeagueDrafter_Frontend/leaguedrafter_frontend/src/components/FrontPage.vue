@@ -4,7 +4,7 @@
       <Team :blueTeam="true"></Team>
     </div>
     <div class="champArea">
-
+      <ChampSelect> </ChampSelect>
     </div>
     <div class="redSide">
       <Team :blueTeam="false"></Team>
@@ -15,10 +15,12 @@
 
 <script>
 import Team from './Team.vue'
+import ChampSelect from './ChampSelect.vue'
 export default {
   name:"FrontPage",
   components:{
-    'Team' : Team
+    'Team' : Team,
+    'ChampSelect' : ChampSelect
   }
 }
 </script>
@@ -34,7 +36,7 @@ export default {
 .blueSide{
   float:left;
   position: relative;
-  width:25%;
+  width:15%;
   height:100%;
   display:block;
   background-color: rgb(5, 105, 199);
@@ -43,7 +45,7 @@ export default {
 .redSide{
   float:right;
   position: relative;
-  width:25%;
+  width:15%;
   height:100%;
   display:block;
   background-color: rgb(219, 58, 58);
@@ -51,5 +53,9 @@ export default {
 
 .champArea{
   position:relative;
+  width:70%;
+  height:100%;
+  display:inline-block;
+  background-color: rgb(151, 150, 150);
 }
 </style>

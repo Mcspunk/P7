@@ -31,14 +31,18 @@ export default {
 
 <style lang="scss" scoped>
 .container{
-  display:inline-block;
+  overflow:hidden;
+  display:block;
   width:100%;
-}
-ul{
+  float:left;
+  ul{
   list-style-type:none;
   width: 100%;
+  float:inherit;
   li{
     margin-right: -20px;
   }
 }
+}
+
 </style>
