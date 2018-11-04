@@ -1,7 +1,7 @@
 <template>
   <div class="container-redPlayer">
       <div class="roleText md-body2">{{this.role}}</div>
-      <champion-box :champion="this.champion" class="champBox"> </champion-box>
+      <ChampionBox :champion="this.champion" class="champBox"> </ChampionBox>
   </div>
 </template>
 

@@ -1,10 +1,50 @@
 <template>
-      <md-tabs>
-      <md-tab id="tab-home" md-label="Fighter" md-icon="home"></md-tab>
-      <md-tab id="tab-pages" md-label="Tank" md-icon="pages"></md-tab>
-      <md-tab id="tab-posts" md-label="Support" md-icon="/assets/icon-whatshot.svg"></md-tab>
-      <md-tab id="tab-favorites" md-label="Mage" md-icon="favorite"></md-tab>
-      <md-tab id="tab-favorites" md-label="Assassin" md-icon="favorite"></md-tab>
-      <md-tab id="tab-favorites" md-label="Marksman" md-icon="favorite"></md-tab>
-    </md-tabs>
+  <div class="container">
+    <ChampSelectTopBar> </ChampSelectTopBar>
+    <ChampSelectGrid :Champions="this.Champions"> </ChampSelectGrid>
+  </div>
 </template>
+
+
+<script>
+import ChampSelectTopBar from './ChampSelectTopBar.vue'
+import ChampSelectGrid from './ChampSelectGrid.vue'
+export default {
+  data(){
+    return{
+      selectedTag:"All",
+      searchString:"",
+      Champions: [
+        {name:"Katarina", tags:"Mage;Assassin",imgPath:"kata.png"},
+        {name:"Garen",tags:"Fighter;Tank",imgPath:"garen.png"},
+        {name:"Thresh",tags:"Support",imgPath:"thresh.png"},
+        {name:"Twitch",tags:"Jungle;Marksman",imgPath:"twitch.png"},
+        {name:"Katarina", tags:"Mage;Assassin",imgPath:"kata.png"},
+        {name:"Garen",tags:"Fighter;Tank",imgPath:"garen.png"},
+        {name:"Thresh",tags:"Support",imgPath:"thresh.png"},
+        {name:"Twitch",tags:"Jungle;Marksman",imgPath:"twitch.png"},
+        {name:"Katarina", tags:"Mage;Assassin",imgPath:"kata.png"},
+        {name:"Garen",tags:"Fighter;Tank",imgPath:"garen.png"},
+        {name:"Thresh",tags:"Support",imgPath:"thresh.png"},
+        {name:"Twitch",tags:"Jungle;Marksman",imgPath:"twitch.png"},
+        {name:"Katarina", tags:"Mage;Assassin",imgPath:"kata.png"},
+        {name:"Garen",tags:"Fighter;Tank",imgPath:"garen.png"},
+        {name:"Thresh",tags:"Support",imgPath:"thresh.png"},
+        {name:"Twitch",tags:"Jungle;Marksman",imgPath:"twitch.png"}
+      ]
+    }
+  },
+  components:{
+    'ChampSelectTopBar':ChampSelectTopBar,
+    'ChampSelectGrid':ChampSelectGrid
+  }
+}
+</script>
+
+
+<style lang="scss" scoped>
+.container{
+  position: relative;
+  display:block;
+}
+</style>

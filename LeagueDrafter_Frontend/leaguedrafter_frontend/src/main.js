@@ -11,7 +11,7 @@ Vue.use(MdButton)
 Vue.use(VueMaterial)
 Vue.use(MdContent)
 Vue.use(MdTabs)
-
+Vue.use(MdIcon)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
