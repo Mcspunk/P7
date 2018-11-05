@@ -14,15 +14,45 @@
       </md-tabs>
     </div>
     <div class="searchBar">
-      <md-field class="searchField"> 
+      <md-autocomplete id="searchField" v-model="searchTerm" :md-options="this.ChampionNames" :md-open-on-focus="false" @md-changed="searchChanged">
       <label>Search</label>
-      <md-input></md-input>
-      <md-icon>search</md-icon>
-    </md-field>
-
+      </md-autocomplete>
+      <template slot="md-autocomplete-item" slot-scope="{ item, term }"> ... </template>
     </div>
   </div>  
 </template>
+
+<script>
+export default {
+  props:['Champions'],
+  data(){
+    return{
+      searchTerm:"",
+      currentTag:"",
+      matchedChamps:[]
+    }
+  },
+  methods:{
+    tabChanged:function(id){
+      this.currentTag = id.split('-')[1];
+      this.$parent.filterChampions(this.currentTag,this.searchTerm.toLowerCase());
+    },
+    searchChanged:function(){
+      this.$parent.filterChampions(this.currentTag,this.searchTerm.toLowerCase());
+    }
+  },
+  computed:{
+    ChampionNames(){
+      var champNames = [];
+      this.Champions.forEach(champion => {
+        champNames.push(champion.name);
+      });
+      return champNames;
+    }
+  }
+}
+</script>
+
 
 
 
@@ -48,10 +78,6 @@
     overflow:hidden;
     margin-right:10px;
     background-color: rgb(66, 66, 66);
-    .searchField{
-      margin-top:15px;
-      overflow:hidden;
-    }
   }
 }
 
