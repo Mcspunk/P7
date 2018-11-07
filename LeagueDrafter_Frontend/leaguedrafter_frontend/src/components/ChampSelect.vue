@@ -13,27 +13,17 @@ export default {
   data(){
     return{
       filteredChampions:[],
-      Champions: [
-        {name:"Katarina", tags:"Mage;Assassin",imgPath:"kata.png"},
-        {name:"Garen",tags:"Fighter;Tank",imgPath:"garen.png"},
-        {name:"Thresh",tags:"Support",imgPath:"thresh.png"},
-        {name:"Twitch",tags:"Jungle;Marksman",imgPath:"twitch.png"},
-        {name:"Katarina", tags:"Mage;Assassin",imgPath:"kata.png"},
-        {name:"Garen",tags:"Fighter;Tank",imgPath:"garen.png"},
-        {name:"Thresh",tags:"Support",imgPath:"thresh.png"},
-        {name:"Twitch",tags:"Jungle;Marksman",imgPath:"twitch.png"},
-        {name:"Katarina", tags:"Mage;Assassin",imgPath:"kata.png"},
-        {name:"Garen",tags:"Fighter;Tank",imgPath:"garen.png"},
-        {name:"Thresh",tags:"Support",imgPath:"thresh.png"},
-        {name:"Twitch",tags:"Jungle;Marksman",imgPath:"twitch.png"},
-        {name:"Katarina", tags:"Mage;Assassin",imgPath:"kata.png"},
-        {name:"Garen",tags:"Fighter;Tank",imgPath:"garen.png"},
-        {name:"Thresh",tags:"Support",imgPath:"thresh.png"},
-        {name:"Twitch",tags:"Jungle;Marksman",imgPath:"twitch.png"}
-      ]
+      Champions: []
     }
   },
   methods:{
+    getChampions: function(){
+        this.$http.get(this.$api.champions.getChampions)
+        .then(response => {
+            this.Champions = response.data;
+            console.log(this.Champions);
+        })
+    },
     filterChampions:function(tag,searchString){
       if(tag === "all") this.filteredChampions = this.Champions;
       else this.filteredChampions = this.Champions.filter((champion) => champion.tags.toLowerCase().includes(tag));
@@ -45,6 +35,10 @@ export default {
     'ChampSelectGrid':ChampSelectGrid
   },
   created(){
+    this.getChampions();
+    this.filteredChampions = this.Champions;
+  },
+  mounted(){
     this.filteredChampions = this.Champions;
   }
 }

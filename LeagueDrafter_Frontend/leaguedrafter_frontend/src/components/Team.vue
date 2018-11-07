@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <ul>
-      <li><PlayerSlot :champion="this.champ1" :role="'Top'" :floatRole="this.blueTeam"></PlayerSlot></li>
-      <li><PlayerSlot :champion="this.champ1" :role="'Jungle'"></PlayerSlot></li>
-      <li><PlayerSlot :champion="this.champ1" :role="'Mid'"></PlayerSlot></li>
-      <li><PlayerSlot :champion="this.champ1" :role="'Bottom'"></PlayerSlot></li>
-      <li><PlayerSlot :champion="this.champ1" :role="'Support'"></PlayerSlot></li>
+      <li><PlayerSlot :champion="this.topPlaceHolder" :role="'Top'" :floatRole="this.blueTeam"></PlayerSlot></li>
+      <li><PlayerSlot :champion="this.junglePlaceHolder" :role="'Jungle'"></PlayerSlot></li>
+      <li><PlayerSlot :champion="this.midPlaceHolder" :role="'Mid'"></PlayerSlot></li>
+      <li><PlayerSlot :champion="this.botPlaceHolder" :role="'Bottom'"></PlayerSlot></li>
+      <li><PlayerSlot :champion="this.supportPlaceHolder" :role="'Support'"></PlayerSlot></li>
     </ul>
   </div>
 </template>
@@ -17,9 +17,25 @@ export default {
   name:"Team",
   data () {
     return {
-        champ1:{
-          id:1,
-          imgPath:"kata.png"
+        topPlaceHolder:{
+          id:-1,
+          imgPath:"Top_icon.png"
+        },
+        midPlaceHolder:{
+          id:-1,
+          imgPath:"Mid_icon.png"
+        },
+        junglePlaceHolder:{
+          id:-1,
+          imgPath:"Jungle_icon.png"
+        },
+        supportPlaceHolder:{
+          id:-1,
+          imgPath:"Support_icon.png"
+        },
+        botPlaceHolder:{
+          id:-1,
+          imgPath:"Bot_icon.png"
         }
     }
   },

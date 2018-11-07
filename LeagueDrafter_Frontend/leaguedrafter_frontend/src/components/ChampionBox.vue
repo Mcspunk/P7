@@ -34,7 +34,7 @@ export default {
 .container {
   height: 75px;
   width: 75px;
-  background-color: aqua;
+  background-color: rgba(0, 255, 255, 0);
 }
 img {
   width: 100%;

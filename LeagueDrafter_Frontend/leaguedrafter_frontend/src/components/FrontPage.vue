@@ -39,7 +39,7 @@ export default {
   width:15%;
   height:100%;
   display:block;
-  background-color: rgb(5, 105, 199);
+  background-color: rgb(28, 123, 179);
 }
 
 .redSide{
