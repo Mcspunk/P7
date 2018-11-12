@@ -36,12 +36,12 @@ class dbConnector:
         playedChampions = []
         intermediateList = []
 
-        cursor.execute('SELECT corrected_id FROM player ORDER BY playerid ASC')
+        cursor.execute('SELECT p.corrected_id, damage, toughness, control, mobility, utility, difficulty FROM player p JOIN  champions ch ON p.corrected_id = ch.corrected_id ORDER BY playerid ASC')
         row = cursor.fetchone()
 
         i=1
         while row is not None:
-            intermediateList.extend(row)
+            intermediateList.append(row)
             row = cursor.fetchone()
             if i % 10 == 0 and i != 0:
                 playedChampions.append(intermediateList)
@@ -58,19 +58,25 @@ class dbConnector:
         dataset = []
         datasetrow = []
 
-        datasetrow = [0] * amountOfChamps
+        #datasetrow = [0] * amountOfChamps
 
         while len(redTeam) != 0:
 
             for champ in redTeam[0]:
-                datasetrow[champ] = 1
+                temp = []
+                temp.append(1)
+                temp.extend(champ)
+                datasetrow.append(temp)
             for champ in blueTeam[0]:
-                datasetrow[champ] = -1
+                temp = []
+                temp.append(-1)
+                temp.extend(champ)
+                datasetrow.append(temp)
 
             dataset.append(datasetrow)
             redTeam.pop(0)
             blueTeam.pop(0)
-            datasetrow = [0] * amountOfChamps
+            datasetrow = [] #[0] * amountOfChamps
 
         Wins = []
 
@@ -81,10 +87,12 @@ class dbConnector:
         while row is not None:
             if row[0] == True:
                 #Wins.append([1])
-                Wins.append([1, 0])
+                #Wins.append([1, 0])
+                Wins.append([[1, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
             else:
                 #Wins.append([0])
-                Wins.append([0, 1])
+                #Wins.append([0, 1])
+                Wins.append([[0, 1], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
             row = cursor.fetchone()
 
         cursor.close()
