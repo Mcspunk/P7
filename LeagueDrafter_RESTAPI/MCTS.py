@@ -167,15 +167,48 @@ class Mcts:
 
     def recall_subtree(self, state, root):
         search_depth = len(state.enemy_team) + len(state.ally_team)
+        choices = []
+        if self.user_team_starts:
+            first_pick_team = list(state.ally_team)
+            last_pick_team = list(state.enemy_team)
+        else:
+            first_pick_team = list(state.enemy_team)
+            last_pick_team = list(state.ally_team)
+
+        alternate = True
+        for i in range(0, search_depth):
+            if i == 0:
+                choices.append(first_pick_team.pop(0))
+                alternate = True
+            elif i == 9:
+                choices.append(last_pick_team.pop(0))
+            elif i % 2 == 1:
+                if alternate:
+                    choices.append(last_pick_team.pop(0))
+                else:  choices.append(first_pick_team.pop(0))
+            else:
+                if alternate:
+                    choices.append(last_pick_team.pop(0))
+                    alternate = False
+                else:
+                    choices.append(first_pick_team.pop(0))
+                    alternate = True
+
+        current_turn = root.depth
         node = root
-        for turn in range(0, search_depth):
-
-            node = self.find_state_at_turn(node)
-
+        for turn in range(current_turn, search_depth):
+            node = self.find_state_at_turn(node, choices[turn])
+        return node
 
 listemedbann = set(range(1, 10))
 root_state = State(None, True)
 MctsInstance = Mcts(listemedbann, root_state, 2, True)
+test_state = State()
+test_state.ally_team = [1, 2, 3, 4, 5]
+test_state.enemy_team = [6, 7, 8, 9, 10]
+MctsInstance.recall_subtree(test_state)
+
+
 score = MctsInstance.run_mcts(10000)
 print(score)
 
