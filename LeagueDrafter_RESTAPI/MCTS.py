@@ -15,6 +15,7 @@ class Node:
             set_copy.add(champ)
             self.tree_path = set_copy
 
+
         else:
             self.depth = 0
             self.tree_path = set()
@@ -58,6 +59,12 @@ class Mcts:
                 continue
             else:
                 current_node = selected_action
+                if current_node.depth == 10:
+                    simulation_result = self.simulate(current_node)
+                    self.backprop(simulation_result, current_node)
+                    current_node = self.root_node
+                    x += 1
+
         best_choice = None
         best_val = 0
         for i in self.root_node.children:
@@ -152,10 +159,24 @@ class Mcts:
         node_to_update.value += result
         return None
 
+    def find_state_at_turn(self, node, champ):
+        for child in node.children:
+            if child.champ == champ:
+                return child
 
-listemedbann = set(range(1, 130))
+
+    def recall_subtree(self, state, root):
+        search_depth = len(state.enemy_team) + len(state.ally_team)
+        node = root
+        for turn in range(0, search_depth):
+
+            node = self.find_state_at_turn(node)
+
+
+listemedbann = set(range(1, 10))
 root_state = State(None, True)
 MctsInstance = Mcts(listemedbann, root_state, 2, True)
-print(MctsInstance.run_mcts(10000))
+score = MctsInstance.run_mcts(10000)
+print(score)
 
 
