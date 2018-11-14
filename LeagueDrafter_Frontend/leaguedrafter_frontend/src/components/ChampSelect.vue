@@ -1,7 +1,11 @@
 <template>
   <div class="container">
-    <ChampSelectTopBar :Champions="this.Champions"> </ChampSelectTopBar>
-    <ChampSelectGrid :Champions="this.filteredChampions"> </ChampSelectGrid>
+    <div>
+      <ChampSelectTopBar :Champions="this.Champions"> </ChampSelectTopBar>
+    </div>
+    <div id="grid-container">
+      <ChampSelectGrid :Champions="this.filteredChampions"> </ChampSelectGrid>
+    </div> 
   </div>
 </template>
 
@@ -49,5 +53,9 @@ export default {
 .container{
   position: relative;
   display:block;
+}
+#grid-container{
+  overflow-y:scroll;
+  height: 500px;
 }
 </style>

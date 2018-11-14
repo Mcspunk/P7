@@ -22,7 +22,12 @@ export default {
   },
   methods: {
     getImgFile() {
-      return require("../assets/champIcons/" + this.champion.imgPath);
+      return require("../assets/champIcons/" + this.getChampion.imgPath);
+    }
+  },
+  computed:{
+    getChampion(){
+      return this.champion
     }
   }
 };

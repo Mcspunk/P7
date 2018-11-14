@@ -14,9 +14,7 @@ def hello_world():
 def test():
     return "TesterFyr"
 
-
-@app.route('/api/get/champions')
-def get_champions():
+def fetch_champions():
     """ query data from the vendors table """
     conn = None
     try:
@@ -35,6 +33,15 @@ def get_champions():
     finally:
         if conn is not None:
             conn.close()
+
+
+champions = fetch_champions()
+
+@app.route('/api/get/champions')
+def get_champions():
+    return champions
+
+
 
 if __name__ == '__main__':
     app.run()

@@ -1,12 +1,15 @@
 <template>
   <div class="container">
-    <div class="championGrid" v-for="(Champion,index) in this.Champions" :key="Champion.id">
-      <ChampionBox :champion="Champion" class="championSlot"> </ChampionBox>
-    </div>
+    <Container :get-child-payload="getPayload" :group-name="'champGrid'" :orientation="'horizontal'" behaviour="drop-zone">
+        <Draggable v-for="Champion in this.Champions" :key="Champion.id">
+            <ChampionBox :champion="Champion" class="championSlot"> </ChampionBox>
+        </Draggable>
+    </Container>
   </div>
 </template>
 
 <script>
+import { Container, Draggable } from "vue-smooth-dnd";
 import ChampionBox from './ChampionBox.vue'
 export default {
   props:['Champions'],
@@ -15,8 +18,13 @@ export default {
       
     }
   },
+  methods:{
+    getPayload:function(index){
+      return this.Champions[index];
+    }
+  },
   components:{
-    'ChampionBox':ChampionBox
+    ChampionBox,Container,Draggable
   }
 }
 </script>
@@ -24,10 +32,15 @@ export default {
 
 <style lang="scss" scoped>
   .container{
-    margin-left:25px
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-left:4%;
   }
   .championSlot{
-    margin:5px;
-    float:left;
+    display:inline-block;
+    margin:8px;
   }
+
 </style>

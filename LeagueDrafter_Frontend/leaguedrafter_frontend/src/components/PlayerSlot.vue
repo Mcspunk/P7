@@ -1,7 +1,7 @@
 <template>
   <div class="container-redPlayer">
-      <div class="roleText md-body2">{{this.role}}</div>
-      <ChampionBox :champion="this.champion" class="champBox"> </ChampionBox>
+      <div class="roleText">{{this.role}}</div>
+        <ChampionBox :champion="this.pvChamp" id="champBox"> </ChampionBox>
   </div>
 </template>
 
@@ -10,9 +10,12 @@ import ChampionBox from "./ChampionBox.vue"
 export default {
   name: "PlayerSlot",
   props: ["champion","role","floatRole"],
-  date (){
+  data (){
     return{
+      pvChamp: this.champion
     }
+  },
+  methods:{
   },
   components:{
     'ChampionBox' : ChampionBox
@@ -28,8 +31,7 @@ export default {
   float: left;
   h3{float: inherit;}
 
-  .champBox{
-    
+  #champBox{
     float:left;
   }
 }

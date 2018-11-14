@@ -1,46 +1,60 @@
 <template>
   <div class="container">
-    <ul>
-      <li><PlayerSlot :champion="this.topPlaceHolder" :role="'Top'" :floatRole="this.blueTeam"></PlayerSlot></li>
-      <li><PlayerSlot :champion="this.junglePlaceHolder" :role="'Jungle'"></PlayerSlot></li>
-      <li><PlayerSlot :champion="this.midPlaceHolder" :role="'Mid'"></PlayerSlot></li>
-      <li><PlayerSlot :champion="this.botPlaceHolder" :role="'Bottom'"></PlayerSlot></li>
-      <li><PlayerSlot :champion="this.supportPlaceHolder" :role="'Support'"></PlayerSlot></li>
+    <ul v-for="placeHolder in this.placeHolders" :key="placeHolder.imgPath">
+      <Container @drop="onDrop" :group-name="'champGrid'" :orientation="'vertical'" behaviour="drop-zone">
+        <li><PlayerSlot :champion="placeHolder" :role="placeHolder.role"></PlayerSlot></li>
+       </Container>
     </ul>
+   
   </div>
 </template>
 
 <script>
 import PlayerSlot from './PlayerSlot.vue'
+import {Container} from "vue-smooth-dnd"
 export default {
   props:["blueTeam"],
   name:"Team",
   data () {
     return {
-        topPlaceHolder:{
+      placeHolders:[
+        {
           id:-1,
-          imgPath:"Top_icon.png"
+          imgPath:"Top_icon.png",
+          role:"Top"
         },
-        midPlaceHolder:{
+        {
           id:-1,
-          imgPath:"Mid_icon.png"
+          imgPath:"Mid_icon.png",
+          role:"Mid"
         },
-        junglePlaceHolder:{
+        {
           id:-1,
-          imgPath:"Jungle_icon.png"
+          imgPath:"Jungle_icon.png",
+          role:"Jungle"
         },
-        supportPlaceHolder:{
+        {
           id:-1,
-          imgPath:"Support_icon.png"
+          imgPath:"Support_icon.png",
+          role:"Support"
         },
-        botPlaceHolder:{
+        {
           id:-1,
-          imgPath:"Bot_icon.png"
+          imgPath:"Bot_icon.png",
+          role:"Bot"
         }
+      ]
+        
+    }
+  },
+  methods:{
+    onDrop(dropResult){
+      this.placeHolders.splice(0,1,dropResult.payload);
     }
   },
   components:{
-    'PlayerSlot' : PlayerSlot
+    'PlayerSlot' : PlayerSlot,
+    Container
   }
 }
 </script>
