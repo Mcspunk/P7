@@ -1,9 +1,17 @@
 import random
 import math
+import numpy as np
 from array import *
 
-class Node:
 
+class Suggestion:
+    def __init__(self, champ, score, champ2=None):
+        self.champ = champ
+        self.score = score
+        self.champ2 = champ2
+
+
+class Node:
     def __init__(self, possible_actions, state, parent=None, champ=None):
         self.visited = 0
         self.value = 0
@@ -15,7 +23,6 @@ class Node:
             set_copy.add(champ)
             self.tree_path = set_copy
 
-
         else:
             self.depth = 0
             self.tree_path = set()
@@ -23,6 +30,9 @@ class Node:
         self.possible_actions = list(possible_actions) #from parent
         self.children = []
         self.champ = champ
+
+    def mcts_score(self):
+        return self.value/self.visited
 
 
 class State:
@@ -37,18 +47,23 @@ class State:
             self.enemy_team = list.copy(parent.enemy_team)
             self.ally_starting = parent.ally_starting
 
+    def get_turn(self):
+        return len(self.ally_team) + len(self.enemy_team)
+
+
 class Mcts:
 
     def __init__(self, banned, input_state, exploration_term, starts):
-        self.allowed_champions = self.get_allowed_champions(banned)
+        self.banned_champs = banned
+        self.allowed_champions = self.get_allowed_champions(self.banned_champs)
         self.root_node = Node(self.allowed_champions, input_state)
         self.exploration_term = exploration_term
         self.user_team_starts = starts
 
 
-    def run_mcts(self,iterations):
-        x=0
-        current_node = self.root_node
+    def run_mcts(self,iterations, node, pair_of_champions, suggested_amount=10):
+        x = 0
+        current_node = node
         while x < iterations:
             selected_action = self.select(current_node)
             if not isinstance(selected_action, Node):
@@ -62,20 +77,51 @@ class Mcts:
                 if current_node.depth == 10:
                     simulation_result = self.simulate(current_node)
                     self.backprop(simulation_result, current_node)
-                    current_node = self.root_node
+                    current_node = node
                     x += 1
+        return self.get_suggestions(node, pair_of_champions, suggested_amount)
 
-        best_choice = None
-        best_val = 0
-        for i in self.root_node.children:
-            if i.value/i.visited > best_val:
-                best_val = i.value/i.visited
-                best_choice = i
-        return best_val
+    def get_suggestions(self, node, pair_of_champions, suggested_amount):
+        if pair_of_champions and self.is_dual_return(node.state):
+            suggestions = []
+            for i in self.root_node.children:
+                for j in i.children:
+                    suggestions.append(Suggestion(j.champ, j.mcts_score(), i.champ))
+            suggestions.sort(key=lambda x: x.score, reverse=True)
+            return suggestions[:suggested_amount]
 
-    def get_allowed_champions(self, banned_champs):
+        else:
+            suggestions = []
+            result = list.copy(self.root_node.children)
+            result.sort(key=lambda x: x.mcts_score(), reverse=True)
+            for child in result:
+                suggestions.append(Suggestion(child.champ, child.mcts_score()))
+            return suggestions[:suggested_amount]
+
+    def post_draft_turn(self, state:State, pair_of_champs, banned_champs, iterations):
+        self.banned_champs = banned_champs
+        self.root_node = self.recall_subtree(state, self.root_node)
+        suggestions = self.run_mcts(iterations, self.root_node, pair_of_champs)
+        return suggestions
+
+    def is_dual_return(self, state:State):
+        if state.ally_starting:
+            if state.get_turn() == 3 or state.get_turn() == 7:
+                return True
+            else:
+                return False
+        else:
+            if state.get_turn() == 1 or state.get_turn() == 5:
+                return True
+            else:
+                return False
+
+    def get_allowed_champions(self, banned_champs, already_chosen = None):
         champions = set(range(1, 142))
-        return champions - banned_champs
+        if already_chosen is None:
+            return champions - banned_champs
+        else:
+            return champions - banned_champs - set(already_chosen)
 
     def select(self, node):
         if len(node.possible_actions) > 0:
@@ -87,11 +133,14 @@ class Mcts:
             most_promising_child = None
 
             for child in node.children:
-                score = (float(child.value) / float(child.visited)) + (float(self.exploration_term) * math.sqrt(math.log(float(child.parent.visited))/float(child.visited)))
+                score = self.UCT(child)
                 if best_score < score:
                     best_score = score
                     most_promising_child = child
         return most_promising_child
+
+    def UCT(self, node):
+        return (float(node.value) / float(node.visited)) + (float(self.exploration_term) * math.sqrt(math.log(float(node.parent.visited))/float(node.visited)))
 
 
     def choose_action(self, possible_actions):
@@ -133,16 +182,12 @@ class Mcts:
             new_state.enemy_team.append(action)
         return new_state
 
-
     def simulate(self, node):
-        result = 0;
-        state = State(node.state)
         copied_node = Node(node.possible_actions, node.state, node.parent, node.champ)
         while len(copied_node.state.enemy_team) <5 or len(copied_node.state.ally_team) < 5:
             action = random.choice(tuple(copied_node.possible_actions))
             copied_node.possible_actions.remove(action)
             copied_node.state = self.find_new_state(action, copied_node)
-
 
         #kald til NN her!
         result = random.uniform(0.0, 1.0)
@@ -164,9 +209,8 @@ class Mcts:
             if child.champ == champ:
                 return child
 
-
-    def recall_subtree(self, state, root):
-        search_depth = len(state.enemy_team) + len(state.ally_team)
+    def recall_subtree(self, state, root=None):
+        search_depth = state.get_turn()
         choices = []
         if self.user_team_starts:
             first_pick_team = list(state.ally_team)
@@ -198,18 +242,21 @@ class Mcts:
         node = root
         for turn in range(current_turn, search_depth):
             node = self.find_state_at_turn(node, choices[turn])
+            if node is None:
+                node = Node(self.get_allowed_champions(self.banned_champs, choices), state)
+                break
+        node.parent = None
         return node
 
 listemedbann = set(range(1, 10))
 root_state = State(None, True)
 MctsInstance = Mcts(listemedbann, root_state, 2, True)
 test_state = State()
-test_state.ally_team = [1, 2, 3, 4, 5]
-test_state.enemy_team = [6, 7, 8, 9, 10]
-MctsInstance.recall_subtree(test_state)
+test_state.ally_team = [11]
+test_state.enemy_team = [12,13]
+test_state.ally_starting =True
+result = MctsInstance.post_draft_turn(test_state, True, listemedbann, 500000)
 
-
-score = MctsInstance.run_mcts(10000)
-print(score)
+print(result)
 
 
