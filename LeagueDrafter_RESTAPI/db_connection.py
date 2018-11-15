@@ -27,6 +27,7 @@ class dbConnector:
 
         return
 
+
     def retrieveDataset(self):
         amountOfChamps = 141
 
@@ -95,9 +96,16 @@ class dbConnector:
                 Wins.append([[0, 1], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
             row = cursor.fetchone()
 
+        cursor.execute('SELECT corrected_id, damage, toughness, control, mobility, utility, difficulty FROM champions')
+        championrow = cursor.fetchone()
+        champions = []
+        while championrow is not None:
+            champions.append(championrow)
+            championrow = cursor.fetchone()
+
         cursor.close()
         conn.close()
 
-        return dataset, Wins
+        return dataset, Wins, champions
 
 
