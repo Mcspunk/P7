@@ -1,5 +1,6 @@
 import random
 import math
+import LeagueDrafter_RESTAPI.initial_win_pred as NN
 import numpy as np
 from array import *
 
@@ -188,10 +189,9 @@ class Mcts:
             action = random.choice(tuple(copied_node.possible_actions))
             copied_node.possible_actions.remove(action)
             copied_node.state = self.find_new_state(action, copied_node)
-
-        #kald til NN her!
-        result = random.uniform(0.0, 1.0)
-        return result
+        input_list = list(copied_node.state.ally_team)
+        input_list.extend(list(copied_node.state.enemy_team))
+        return NN.predictTeamComp(input_list)
 
     def backprop(self, result, node):
         node_to_update = node
