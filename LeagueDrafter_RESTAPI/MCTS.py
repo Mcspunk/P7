@@ -1,6 +1,6 @@
 import random
 import math
-import LeagueDrafter_RESTAPI.initial_win_pred as NN
+import initial_win_pred as NN
 import numpy as np
 from array import *
 
@@ -118,7 +118,7 @@ class Mcts:
                 return False
 
     def get_allowed_champions(self, banned_champs, already_chosen = None):
-        champions = set(range(1, 142))
+        champions = set(range(0, 141))
         if already_chosen is None:
             return champions - banned_champs
         else:
@@ -252,11 +252,14 @@ listemedbann = set(range(1, 10))
 root_state = State(None, True)
 MctsInstance = Mcts(listemedbann, root_state, 2, True)
 test_state = State()
-test_state.ally_team = [11]
-test_state.enemy_team = [12,13]
+test_state.ally_team = [137, 80, 79]
+test_state.enemy_team = [23, 34, 45, 56]
 test_state.ally_starting =True
-result = MctsInstance.post_draft_turn(test_state, True, listemedbann, 500000)
+result = MctsInstance.post_draft_turn(test_state, True, listemedbann, 100000)
 
-print(result)
+for i in result:
+    print(i.champ, ' - ', i.champ2)
+
+#print(result)
 
 

@@ -45,11 +45,10 @@ def loadModel():
 
 def predictTeamComp(input):
     #trainModel()
-    trained_model = loadModel()
     pred = np.reshape(createTempComp(input), (1,10,8))
     return trained_model.predict(pred)[0][0][0]
 
-
+trained_model = loadModel()
 def createTempComp(input):
     resultTC = []
     for i in range(0,5):

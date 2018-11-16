@@ -330,3 +330,5 @@ ASALocalRun/
 .mfractor/
 
 venv/
+
+LeagueDrafter_RESTAPI/savedNetwork\.h5
