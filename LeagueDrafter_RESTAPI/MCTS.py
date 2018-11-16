@@ -52,10 +52,9 @@ class State:
 
 class Mcts:
 
-    def __init__(self, banned, input_state, exploration_term):
-        self.banned_champs = banned
-        self.allowed_champions = self.get_allowed_champions(self.banned_champs)
-        self.root_node = Node(self.allowed_champions, input_state)
+    def __init__(self, exploration_term):
+        self.allowed_champions = self.get_allowed_champions()
+        self.root_node = None #= Node(self.allowed_champions, input_state)
         self.exploration_term = exploration_term
 
 
@@ -98,7 +97,8 @@ class Mcts:
 
     def post_draft_turn(self, state:State, pair_of_champs, banned_champs, iterations):
         self.banned_champs = banned_champs
-        self.root_node = self.recall_subtree(state, self.root_node)
+        self.root_node = self.recall_subtree(state)
+        self.allowed_champions = list.copy(self.root_node.possible_actions)
         suggestions = self.run_mcts(iterations, self.root_node, pair_of_champs)
         return suggestions
 
@@ -114,12 +114,18 @@ class Mcts:
             else:
                 return False
 
-    def get_allowed_champions(self, banned_champs, already_chosen = None):
+    def get_allowed_champions(self, banned_champs=None, already_chosen=None):
         champions = set(range(0, 141))
-        if already_chosen is None:
-            return champions - banned_champs
+        if banned_champs is None:
+            if already_chosen is None:
+                return champions
+            else:
+                return champions - set(already_chosen)
         else:
-            return champions - banned_champs - set(already_chosen)
+            if already_chosen is None:
+                return champions - banned_champs
+            else:
+                return champions - banned_champs - set(already_chosen)
 
     def select(self, node):
         if len(node.possible_actions) > 0:
@@ -149,7 +155,7 @@ class Mcts:
         new_state = self.find_new_state(action, current_node)
         tree_path = set.copy(current_node.tree_path)
         tree_path.add(action)
-        possible_actions = self.allowed_champions - tree_path
+        possible_actions = set(self.allowed_champions) - tree_path
         new_node = Node(possible_actions, new_state, current_node, action)
         current_node.children.append(new_node)
         return new_node
@@ -206,7 +212,7 @@ class Mcts:
             if child.champ == champ:
                 return child
 
-    def recall_subtree(self, state:State, root=None):
+    def recall_subtree(self, state:State):
         search_depth = state.get_turn()
         choices = []
         if state.ally_starting:
@@ -235,25 +241,28 @@ class Mcts:
                     choices.append(first_pick_team.pop(0))
                     alternate = True
 
-        current_turn = root.depth
-        node = root
-        for turn in range(current_turn, search_depth):
-            node = self.find_state_at_turn(node, choices[turn])
-            if node is None:
-                node = Node(self.get_allowed_champions(self.banned_champs, choices), state)
-                break
-        node.parent = None
+        if self.root_node is None:
+            return Node(self.get_allowed_champions(self.banned_champs, choices), state)
+        else:
+            current_turn = self.root_node.depth
+            node = self.root_node
+            for turn in range(current_turn, search_depth):
+                node = self.find_state_at_turn(node, choices[turn])
+                if node is None:
+                    node = Node(self.get_allowed_champions(self.banned_champs, choices), state)
+                    break
+            node.parent = None
         return node
 
 
 listemedbann = set(range(1, 10))
 root_state = State(None, True)
-MctsInstance = Mcts(listemedbann, root_state, 2)
+MctsInstance = Mcts(2)
 test_state = State()
-test_state.ally_team = [11,14,16,17]
-test_state.enemy_team = [12, 13, 22, 23, 24]
+test_state.ally_team = [11,14,16]
+test_state.enemy_team = [12, 13, 22]
 test_state.ally_starting = False
-result = MctsInstance.post_draft_turn(test_state, True, listemedbann, 5000)
+result = MctsInstance.post_draft_turn(test_state, True, listemedbann, 100000)
 
 print(result)
 
