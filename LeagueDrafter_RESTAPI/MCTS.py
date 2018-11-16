@@ -1,8 +1,6 @@
 import random
 import math
 import LeagueDrafter_RESTAPI.initial_win_pred as NN
-import numpy as np
-from array import *
 
 
 class Suggestion:
@@ -54,12 +52,11 @@ class State:
 
 class Mcts:
 
-    def __init__(self, banned, input_state, exploration_term, starts):
+    def __init__(self, banned, input_state, exploration_term):
         self.banned_champs = banned
         self.allowed_champions = self.get_allowed_champions(self.banned_champs)
         self.root_node = Node(self.allowed_champions, input_state)
         self.exploration_term = exploration_term
-        self.user_team_starts = starts
 
 
     def run_mcts(self,iterations, node, pair_of_champions, suggested_amount=10):
@@ -118,7 +115,7 @@ class Mcts:
                 return False
 
     def get_allowed_champions(self, banned_champs, already_chosen = None):
-        champions = set(range(1, 142))
+        champions = set(range(0, 141))
         if already_chosen is None:
             return champions - banned_champs
         else:
@@ -209,10 +206,10 @@ class Mcts:
             if child.champ == champ:
                 return child
 
-    def recall_subtree(self, state, root=None):
+    def recall_subtree(self, state:State, root=None):
         search_depth = state.get_turn()
         choices = []
-        if self.user_team_starts:
+        if state.ally_starting:
             first_pick_team = list(state.ally_team)
             last_pick_team = list(state.enemy_team)
         else:
@@ -248,14 +245,15 @@ class Mcts:
         node.parent = None
         return node
 
+
 listemedbann = set(range(1, 10))
 root_state = State(None, True)
-MctsInstance = Mcts(listemedbann, root_state, 2, True)
+MctsInstance = Mcts(listemedbann, root_state, 2)
 test_state = State()
-test_state.ally_team = [11]
-test_state.enemy_team = [12,13]
-test_state.ally_starting =True
-result = MctsInstance.post_draft_turn(test_state, True, listemedbann, 500000)
+test_state.ally_team = [11,14,16,17]
+test_state.enemy_team = [12, 13, 22, 23, 24]
+test_state.ally_starting = False
+result = MctsInstance.post_draft_turn(test_state, True, listemedbann, 5000)
 
 print(result)
 
