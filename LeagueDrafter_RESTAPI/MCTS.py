@@ -266,4 +266,4 @@ result = MctsInstance.post_draft_turn(test_state, True, listemedbann, 100000)
 
 print(result)
 
-
+#Git integration i PyCHarm er rimelig ringe
