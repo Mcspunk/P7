@@ -64,3 +64,4 @@ def createTempComp(input):
     return np.array(resultTC)
 
 
+trained_model = loadModel()
