@@ -1,5 +1,6 @@
 import psycopg2 as psycopg2
 from flask import Flask
+import initial_win_pred
 import json
 from flask_cors import CORS
 
@@ -10,9 +11,9 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 def hello_world():
     return 'Hello World!'
 
-@app.route('/test')
+@app.route('/nn')
 def test():
-    return "TesterFyr"
+    return str(initial_win_pred.predictTeamComp([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
 
 def fetch_champions():
     """ query data from the vendors table """
@@ -46,3 +47,4 @@ def get_champions():
 
 if __name__ == '__main__':
     app.run()
+
