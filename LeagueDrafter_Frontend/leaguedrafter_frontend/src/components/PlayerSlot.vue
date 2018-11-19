@@ -1,7 +1,7 @@
 <template>
-  <div class="container-redPlayer">
+  <div class="container">
       <div class="roleText">{{this.role}}</div>
-        <ChampionBox :champion="this.pvChamp" id="champBox"> </ChampionBox>
+      <ChampionBox :champion="this.pvChamp" id="champBox"> </ChampionBox>
   </div>
 </template>
 
@@ -12,30 +12,31 @@ export default {
   props: ["champion","role","floatRole"],
   data (){
     return{
-      pvChamp: this.champion
     }
   },
   methods:{
   },
   components:{
     'ChampionBox' : ChampionBox
+  },
+  computed:{
+    pvChamp: function () {
+      // `this` points to the vm instance
+      return this.champion
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 
-.container-redPlayer{
+.container{
   position:relative;
-  width:75%;
-  float: left;
-  h3{float: inherit;}
-
-  #champBox{
-    float:left;
+  width:100%;
+  display:block;
+  .roleText{
+    text-align: center;
+    font-size: 20px;
   }
 }
-
-
-
 </style>
