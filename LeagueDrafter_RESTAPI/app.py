@@ -3,6 +3,7 @@ from flask import Flask
 import initial_win_pred
 import json
 from flask_cors import CORS
+from flask import request
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -42,7 +43,11 @@ champions = fetch_champions()
 def get_champions():
     return champions
 
-
+@app.route('/api/post/currentState',methods=['POST'])
+def post_currentState():
+    json_data = request.get_json(force=True)
+    data = json_data["allyFirstPick"]
+    return data
 
 
 if __name__ == '__main__':

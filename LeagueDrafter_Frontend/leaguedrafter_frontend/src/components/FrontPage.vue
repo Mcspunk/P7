@@ -35,8 +35,13 @@ export default {
       second: false,
       third: false,
       secondStepError: null,
-      firstPick:null
-
+      firstPick:null,
+      currentState:{
+        allyFirstPick:true,
+        blueChamps:[],
+        redChamps:[],
+        bannedChamps:[1,2,3,4,5,6,7,8,9,10]
+      }
     }
   },
   methods: {
@@ -59,7 +64,7 @@ export default {
         this.secondStepError = 'This is an error!'
       },
       postData(){
-        this.$http.post(this.$api.MCTS.postChampChoice, this.SelectedChamps)
+        this.$http.post(this.$api.MCTS.postCurrentState, this.currentState)
         .then(response =>{
           this.continue = true;
         })

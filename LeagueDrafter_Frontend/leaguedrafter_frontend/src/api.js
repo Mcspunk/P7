@@ -13,7 +13,7 @@ const apiRoutes = {
         getChampions: 'get/champions'
     },
     MCTS:{
-        postChampChoice: 'post/champChoice'
+        postCurrentState: 'post/currentState'
     }
 }
 
