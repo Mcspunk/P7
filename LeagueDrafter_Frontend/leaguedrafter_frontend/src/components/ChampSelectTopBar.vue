@@ -3,7 +3,7 @@
   <div class="container">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <div class="categoryTabs">
-      <md-tabs md-alignment="left" @md-changed="tabChanged">
+      <md-tabs md-alignment="left" @md-changed="tabChanged" :md-active-tab="setTab">
         <md-tab id="tab-all" md-label="All" md-icon="verified_user"></md-tab>
         <md-tab id="tab-fighter" md-label="Fighter" md-icon="verified_user"></md-tab>
         <md-tab id="tab-tank" md-label="Tank" md-icon="verified_user"></md-tab>
@@ -24,12 +24,11 @@
 
 <script>
 export default {
-  props:['Champions'],
   data(){
     return{
       searchTerm:"",
       currentTag:"",
-      matchedChamps:[]
+      setTab:""
     }
   },
   methods:{
@@ -49,6 +48,9 @@ export default {
       });
       return champNames;
     }
+  },
+  created(){
+    this.$parent.filterChampions(this.currentTag,this.searchTerm.toLowerCase());
   }
 }
 </script>

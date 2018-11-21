@@ -12,10 +12,8 @@ const apiRoutes = {
     champions: {
         getChampions: 'get/champions'
     },
-    category(id) {
-        return {
-            getCategories: `test/${id}`
-        }
+    MCTS:{
+        postCurrentState: 'post/currentState'
     }
 }
 

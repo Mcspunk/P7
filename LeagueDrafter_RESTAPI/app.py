@@ -1,7 +1,9 @@
 import psycopg2 as psycopg2
 from flask import Flask
+import initial_win_pred
 import json
 from flask_cors import CORS
+from flask import request
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -10,13 +12,11 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 def hello_world():
     return 'Hello World!'
 
-@app.route('/test')
+@app.route('/nn')
 def test():
-    return "TesterFyr"
+    return str(initial_win_pred.predictTeamComp([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
 
-
-@app.route('/api/get/champions')
-def get_champions():
+def fetch_champions():
     """ query data from the vendors table """
     conn = None
     try:
@@ -35,6 +35,20 @@ def get_champions():
     finally:
         if conn is not None:
             conn.close()
+
+
+champions = fetch_champions()
+
+@app.route('/api/get/champions')
+def get_champions():
+    return champions
+
+@app.route('/api/post/currentState',methods=['POST'])
+def post_currentState():
+    json_data = request.get_json(force=True)
+    data = json_data["allyFirstPick"]
+    return data
+
 
 if __name__ == '__main__':
     app.run()
