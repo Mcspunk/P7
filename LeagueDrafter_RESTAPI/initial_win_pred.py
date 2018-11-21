@@ -5,7 +5,7 @@ from tensorflow import keras
 # Helper libraries
 import numpy as np
 import os
-from db_connection import dbConnector as db
+from LeagueDrafter_RESTAPI.db_connection import dbConnector as db
 
 db_conn = db("sw703db.cgukp5oibqte.eu-central-1.rds.amazonaws.com", "SW703DB", "sw703", "sw703aoe")
 
@@ -62,6 +62,5 @@ def createTempComp(input):
         k.extend(champions[input[i]])
         resultTC.append(k)
     return np.array(resultTC)
-
 
 trained_model = loadModel()
