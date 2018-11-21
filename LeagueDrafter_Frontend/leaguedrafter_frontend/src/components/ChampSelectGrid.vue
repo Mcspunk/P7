@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Container :get-child-payload="getPayload" :group-name="'champGrid'" :orientation="'horizontal'" behaviour="drop-zone">
+    <Container :get-child-payload="getPayload" :group-name="'champGrid'" :orientation="'horizontal'" behaviour="move">
         <Draggable v-for="Champion in this.Champions" :key="Champion.id">
             <ChampionBox :champion="Champion" class="championSlot"> </ChampionBox>
         </Draggable>
@@ -12,7 +12,6 @@
 import { Container, Draggable } from "vue-smooth-dnd";
 import ChampionBox from './ChampionBox.vue'
 export default {
-  props:['Champions'],
   data(){
     return{
       

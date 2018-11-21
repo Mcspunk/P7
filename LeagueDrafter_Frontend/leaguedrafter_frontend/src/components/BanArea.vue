@@ -1,10 +1,15 @@
 <template>
   <div class="container">
+      <h2>Drag'n'Drop Banned Champions</h2>
        <Container :should-animate-drop="()=>false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop('placeHolders', $event, placeHolder.id)">
-            <div>
-              <PlayerSlot :champion="placeHolder.champion" :role="placeHolder.role"></PlayerSlot>
+            <div id="banSlot">
+              <PlayerSlot :champion="placeHolder.champion" :role="''"></PlayerSlot>
             </div>
       </Container>
+      <div class="continueButton">
+        <md-button class="md-raised md-primary continueButton" @click="setDone('second', 'third')">Continue</md-button>
+      </div>
+      
   </div>
 </template>
 
@@ -12,8 +17,7 @@
 import PlayerSlot from "./PlayerSlot.vue";
 import { Container } from "vue-smooth-dnd";
 export default {
-  props: ["blueTeam"],
-  name: "Team",
+  name: "BanArea",
   data() {
     return {
       placeHolders: [
@@ -21,10 +25,10 @@ export default {
           id: 0,
           champion: {
             orgId:-1,
-            imgPath:"Top_icon.png",
-            name:"Top",
+            imgPath:"Ban_icon.png",
+            name:"Ban",
             newId:-1,
-            tags:"TopLaner"
+            tags:"Ban"
           },
           role: "Top"
         },
@@ -32,7 +36,7 @@ export default {
           id: 1,
           champion: {
             orgId:-1,
-            imgPath:"Mid_icon.png",
+            imgPath:"Ban_icon.png",
             name:"Mid",
             newId:-1,
             tags:"MidLaner"
@@ -43,7 +47,7 @@ export default {
           id: 2,
           champion: {
             orgId:-1,
-            imgPath:"Jungle_icon.png",
+            imgPath:"Ban_icon.png",
             name:"Jungle",
             newId:-1,
             tags:"Jungler"
@@ -54,7 +58,7 @@ export default {
           id: 3,
           champion: {
             orgId:-1,
-            imgPath:"Support_icon.png",
+            imgPath:"Ban_icon.png",
             name:"Support",
             newId:-1,
             tags:"Supporter"
@@ -65,7 +69,62 @@ export default {
           id: 4,
           champion: {
             orgId:-1,
-            imgPath:"Bot_icon.png",
+            imgPath:"Ban_icon.png",
+            name:"Bot",
+            newId:-1,
+            tags:"BotLaner"
+          },
+          role: "Bot"
+        },
+        {
+          id: 5,
+          champion: {
+            orgId:-1,
+            imgPath:"Ban_icon.png",
+            name:"Bot",
+            newId:-1,
+            tags:"BotLaner"
+          },
+          role: "Bot"
+        },
+        {
+          id: 6,
+          champion: {
+            orgId:-1,
+            imgPath:"Ban_icon.png",
+            name:"Bot",
+            newId:-1,
+            tags:"BotLaner"
+          },
+          role: "Bot"
+        },
+        {
+          id: 7,
+          champion: {
+            orgId:-1,
+            imgPath:"Ban_icon.png",
+            name:"Bot",
+            newId:-1,
+            tags:"BotLaner"
+          },
+          role: "Bot"
+        },
+        {
+          id: 8,
+          champion: {
+            orgId:-1,
+            imgPath:"Ban_icon.png",
+            name:"Bot",
+            newId:-1,
+            tags:"BotLaner"
+          },
+          role: "Bot"
+        },
+        {
+          id: 9,
+          champion: {
+            orgId:-1,
+            imgPath:"Ban_icon.png",
             name:"Bot",
             newId:-1,
             tags:"BotLaner"
@@ -95,6 +154,11 @@ export default {
       }
 
       return result;
+    },
+    setDone(arg1,arg2){
+      console.log(this.$parent);
+      this.$parent.$parent.methods.setDone(arg1,arg2);
+
     }
   },
   components: {
@@ -107,8 +171,16 @@ export default {
 <style lang="scss" scoped>
 .container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex-wrap:wrap;
-  align-items: center;
+  justify-content: center;
+  align-items:center;
+  background-color: rgb(58, 58, 58);
+  padding:5px;
+  h2{
+    width: 100%;
+    text-align:center;
+  }
 }
+
 </style>

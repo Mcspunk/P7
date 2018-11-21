@@ -1,6 +1,9 @@
 <template>
   <div class="container">
     <div>
+      <BanArea> </BanArea>
+    </div>
+    <div>
       <ChampSelectTopBar :Champions="this.Champions"> </ChampSelectTopBar>
     </div>
     <div id="grid-container">
@@ -13,6 +16,7 @@
 <script>
 import ChampSelectTopBar from './ChampSelectTopBar.vue'
 import ChampSelectGrid from './ChampSelectGrid.vue'
+import BanArea from './BanArea.vue'
 export default {
   data(){
     return{
@@ -25,7 +29,6 @@ export default {
         this.$http.get(this.$api.champions.getChampions)
         .then(response => {
             this.Champions = response.data;
-            console.log(this.Champions);
         })
     },
     filterChampions:function(tag,searchString){
@@ -36,10 +39,11 @@ export default {
   },
   components:{
     'ChampSelectTopBar':ChampSelectTopBar,
-    'ChampSelectGrid':ChampSelectGrid
+    'ChampSelectGrid':ChampSelectGrid,
+    BanArea
   },
   created(){
-    this.getChampions();
+    //this.getChampions();
     this.filteredChampions = this.Champions;
   },
   mounted(){
