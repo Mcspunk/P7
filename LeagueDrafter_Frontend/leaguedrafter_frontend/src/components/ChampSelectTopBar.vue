@@ -4,6 +4,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <div class="categoryTabs">
       <md-tabs md-alignment="left" @md-changed="tabChanged" :md-active-tab="setTab">
+        <md-tab v-if="this.bannedChampionCount != 0" id="tab-suggestion" md-label="Suggestions" md-icon="verified_user"></md-tab>
         <md-tab id="tab-all" md-label="All" md-icon="verified_user"></md-tab>
         <md-tab id="tab-fighter" md-label="Fighter" md-icon="verified_user"></md-tab>
         <md-tab id="tab-tank" md-label="Tank" md-icon="verified_user"></md-tab>
@@ -46,6 +47,9 @@ export default {
     },
     championNames(){
       return this.$store.getters.getChampionNames
+    },
+    bannedChampionCount(){
+      return this.$store.getters.getBannedChampionCount
     }
   }
 }

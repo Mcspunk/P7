@@ -158,6 +158,7 @@ export default {
       return result;
     },
     setDone(arg1,arg2){
+      this.$store.commit('banChampions',{champions:this.placeHolders.filter(placeHolder => placeHolder.champion.newId != -1),ban:true})
       this.$store.commit('setStepperDone',{id:arg1,index:arg2})
       //this.$parent.$parent.methods.setDone(arg1,arg2);
     },

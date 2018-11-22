@@ -29,6 +29,7 @@ const store = new Vuex.Store({
   state:{
     champions:[],
     filteredChampions:[],
+    bannedChampions:[],
     loading:true,
     activeStepper:'first',
     firstStep: false,
@@ -66,6 +67,12 @@ const store = new Vuex.Store({
         state.activeStepper = payload.index
       }
     },
+    banChampions(state,payload){
+      payload.champions.forEach(champ => {
+        state.bannedChampions.push(champ.champion)
+      });
+      console.log(state.bannedChampions)
+    }
   },
   getters: {
     getChampionNames: state => {
@@ -74,6 +81,9 @@ const store = new Vuex.Store({
         champNames.push(champ.name)
       });
       return champNames
+    },
+    getBannedChampionCount: state => {
+      return state.bannedChampions.length
     }
   },
   actions:{

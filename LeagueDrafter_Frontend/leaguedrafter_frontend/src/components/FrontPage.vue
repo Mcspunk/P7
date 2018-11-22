@@ -24,6 +24,7 @@
           <team></team>
         </div>
         <div class="champArea">
+          <InactiveBanArea> </InactiveBanArea>
           <ChampSelect> </ChampSelect>
         </div>
         <div class="redSide">
@@ -41,6 +42,7 @@
 import Team from './Team.vue'
 import ChampSelect from './ChampSelect.vue'
 import ActiveBanArea from './ActiveBanArea.vue'
+import InactiveBanArea from './InactiveBanArea.vue'
 export default {
   name:"FrontPage",
   data(){
@@ -73,7 +75,8 @@ export default {
   components:{
     'Team' : Team,
     'ChampSelect' : ChampSelect,
-    ActiveBanArea
+    ActiveBanArea,
+    InactiveBanArea
   },
   computed:{
     loading(){
