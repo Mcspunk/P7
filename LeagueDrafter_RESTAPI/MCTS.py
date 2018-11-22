@@ -1,9 +1,8 @@
-import jsonpickle
 import math
 import random
-import LeagueDrafter_RESTAPI.initial_win_pred as NN
 import json
-import pickle
+import LeagueDrafter_RESTAPI.initial_win_pred as NN
+import LeagueDrafter_RESTAPI.db_connection as db
 EXPLORATION_TERM = 2
 
 
@@ -54,11 +53,16 @@ class State:
         return len(self.ally_team) + len(self.enemy_team)
 
 
-def post_draft_turn(state: State, pair_of_champs, banned_champs, iterations, tree):
+def post_draft_turn(json, session_id):
+
+    state, banned_champs = game_state_from_json(json)
+    tree = db.loadTree(session_id)
     root_node = recall_subtree(state, tree, banned_champs)
     allowed_champions = list.copy(root_node.possible_actions)
-    suggestions, reduced_root = run_mcts(iterations, root_node, pair_of_champs, allowed_champions)
-    return suggestions, reduced_root
+    suggestions, reduced_root = run_mcts(1000, root_node, True, allowed_champions)
+    db.saveTree(reduced_root, session_id) #Venter sådan set på at træ er gemt til databasen før vi returner suggestions
+    json_suggestions = suggestions_to_json(suggestions)
+    return json_suggestions
 
 
 def run_mcts(iterations, root, pair_of_champions, allowed_champions, suggested_amount=10):
@@ -273,44 +277,39 @@ def recall_subtree(state: State, tree, bans):
         node.parent = None
     return node
 
-def suggestions_to_json(result):
-    suggestions = result
-    json_string = json.dumps(suggestions)
-    return json_string
 
-   # for suggestion in suggestions:
-    #    champ1 = suggestion.champ
-     #   champ2 = suggestion.champ2
-      #  score = suggestion.score
+def suggestions_to_json(suggestions):
+
+    suggestions_string = []
+    for sug in suggestions:
+        suggest = (sug.champ,sug.champ2, sug.score)
+        suggestions_string.append(suggest)
+
+    json_suggestions = json.dumps(suggestions_string)
+    return json_suggestions
 
 
-def handle_input(json_object,root=None):
-    obj = json.load(json_object)
-    ally_starting = obj['allyFirstPick']
-    ally_picks = obj['blueChamps']
-    enemy_picks = obj['redChamps']
-    banned_champs = obj['bannedChamps']
+def game_state_from_json(json_object):
+    obj = json.loads(json_object)
+    ally_team = []
+    enemy_team = []
+    banned_champs = []
+
+    ally_starting = obj['ally_starting']
+    if ally_starting == "True":
+        ally_starting = True
+    else: ally_starting = False
+
+    for element in obj['ally_team']:
+        ally_team.append(element)
+    for element in obj['enemy_team']:
+        enemy_team.append(element)
+    for element in obj['banned_champs']:
+        banned_champs.append(element)
 
     state = State(None, ally_starting)
-    state.ally_team = ally_picks
-    state.enemy_team = enemy_picks
+    state.ally_team = ally_team
+    state.enemy_team = enemy_team
 
-    if root is not None:
-        with open('tree.pkl', 'rb') as input:
-            root = pickle.load(input)
+    return state, set(banned_champs)
 
-    return state, root, banned_champs
-
-listemedbann = set(range(1, 10))
-root_state = State(None, True)
-test_state = State()
-test_state.ally_team = []
-test_state.enemy_team = []
-test_state.ally_starting = False
-resultat, reduced_root = post_draft_turn(test_state, True, listemedbann, 10000, None)
-#suggestions_to_json(resultat)
-#Have to save the reduced_root
-#test = jsonpickle.encode(reduced_root)
-#with open('Træ.txt','w') as outfile:
-#    json.dump(test,outfile)
-print(resultat)
