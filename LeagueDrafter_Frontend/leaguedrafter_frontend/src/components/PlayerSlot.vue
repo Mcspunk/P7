@@ -39,4 +39,9 @@ export default {
     font-size: 20px;
   }
 }
+
+#champBox{
+  width: 75px;
+  height: 75px;
+}
 </style>

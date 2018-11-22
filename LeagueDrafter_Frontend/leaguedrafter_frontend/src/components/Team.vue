@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-       <Container :should-animate-drop="()=>false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop('placeHolders', $event, placeHolder.id)">
+       <Container class="dropContainer" :should-animate-drop="()=>false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop('placeHolders', $event, placeHolder.id)">
             <div>
               <PlayerSlot :champion="placeHolder.champion" :role="placeHolder.role"></PlayerSlot>
             </div>
@@ -110,5 +110,8 @@ export default {
   flex-direction: column;
   flex-wrap:wrap;
   align-items: center;
+}
+.dropContainer{
+  width: 75px;
 }
 </style>

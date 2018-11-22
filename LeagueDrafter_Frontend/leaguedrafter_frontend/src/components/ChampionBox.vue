@@ -4,7 +4,7 @@
     <md-ripple>
     <md-card-area>
       <md-card-media md-ratio="1:1">
-          <img :src="getImgFile()">
+          <img :class="getImgClass()" :src="getImgFile()">
         </md-card-media>
     </md-card-area>
     </md-ripple>
@@ -23,6 +23,10 @@ export default {
   methods: {
     getImgFile() {
       return require("../assets/champIcons/" + this.getChampion.imgPath);
+    },
+    getImgClass(){
+      if(this.champion.picked) return "imgGreyScale"
+      else return ""
     }
   },
   computed:{
@@ -44,6 +48,10 @@ export default {
 img {
   width: 100%;
   height: 100%;
+}
+
+.imgGreyScale{
+  filter: grayscale(100%);
 }
 </style>
 
