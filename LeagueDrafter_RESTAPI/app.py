@@ -1,9 +1,10 @@
 import psycopg2 as psycopg2
 from flask import Flask
-#import initial_win_pred
 import json
 from flask_cors import CORS
 from flask import request
+
+from LeagueDrafter_RESTAPI import initial_win_pred
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
