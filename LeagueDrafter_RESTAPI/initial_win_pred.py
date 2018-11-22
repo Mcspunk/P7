@@ -42,6 +42,7 @@ def trainModel():
 
 def loadModel():
     model = keras.models.load_model('savedNetwork.h5')
+    model._make_predict_function()
     return model
 
 def predictTeamComp(input):
