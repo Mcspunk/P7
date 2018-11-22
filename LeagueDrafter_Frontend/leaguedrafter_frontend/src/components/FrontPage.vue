@@ -13,7 +13,7 @@
       <md-step id="second" md-label="Ban phase" :md-editable="false" :md-done.sync="this.secondStep">
         <div class="champAreaBan">
           <div>
-              <BanArea :active="true"> </BanArea>
+              <ActiveBanArea> </ActiveBanArea>
           </div>
           <ChampSelect> </ChampSelect>
         </div>
@@ -24,9 +24,6 @@
           <team></team>
         </div>
         <div class="champArea">
-          <div>
-              <BanArea :active="false"> </BanArea>
-          </div>
           <ChampSelect> </ChampSelect>
         </div>
         <div class="redSide">
@@ -43,17 +40,17 @@
 <script>
 import Team from './Team.vue'
 import ChampSelect from './ChampSelect.vue'
-import BanArea from './BanArea.vue'
+import ActiveBanArea from './ActiveBanArea.vue'
 export default {
   name:"FrontPage",
   data(){
     return{
       firstPick:null,
       currentState:{
-        allyFirstPick:true,
-        blueChamps:[],
-        redChamps:[],
-        bannedChamps:[1,2,3,4,5,6,7,8,9,10]
+        ally_starting:true,
+        ally_team:[108,103],
+        enemy_team:[130,85],
+        banned_champs:[0,1,2,3,4,5,6,7,8,9]
       }
     }
   },
@@ -66,7 +63,7 @@ export default {
       postData(){
         this.$http.post(this.$api.MCTS.postCurrentState, this.currentState)
         .then(response =>{
-          this.continue = true;
+          console.log(response)
         })
       },
       setDone(idIn){
@@ -76,7 +73,7 @@ export default {
   components:{
     'Team' : Team,
     'ChampSelect' : ChampSelect,
-    BanArea
+    ActiveBanArea
   },
   computed:{
     loading(){

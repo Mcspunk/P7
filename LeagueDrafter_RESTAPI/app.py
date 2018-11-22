@@ -1,6 +1,6 @@
 import psycopg2 as psycopg2
 from flask import Flask
-import initial_win_pred
+#import initial_win_pred
 import json
 from flask_cors import CORS
 from flask import request
@@ -46,8 +46,8 @@ def get_champions():
 @app.route('/api/post/currentState',methods=['POST'])
 def post_currentState():
     json_data = request.get_json(force=True)
-    data = json_data["allyFirstPick"]
-    return data
+    data = json_data["ally_starting"]
+    return json.dumps(data)
 
 
 if __name__ == '__main__':

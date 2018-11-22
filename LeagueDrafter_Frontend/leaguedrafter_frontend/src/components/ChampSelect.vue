@@ -13,7 +13,6 @@
 <script>
 import ChampSelectTopBar from './ChampSelectTopBar.vue'
 import ChampSelectGrid from './ChampSelectGrid.vue'
-import BanArea from './BanArea.vue'
 export default {
   data(){
     return{
@@ -24,7 +23,6 @@ export default {
   components:{
     'ChampSelectTopBar':ChampSelectTopBar,
     'ChampSelectGrid':ChampSelectGrid,
-    BanArea
   }
 }
 </script>

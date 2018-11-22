@@ -1,12 +1,12 @@
 <template>
   <div class="outerContainer">
-      <h2>{{this.bannerText}}</h2>
+      <h2>Drag'n'Drop banned champions</h2>
        <Container :should-animate-drop="()=>false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop('placeHolders', $event, placeHolder.id)">
             <div id="banSlot" @click="removeChampion(placeHolder)">
               <PlayerSlot :champion="placeHolder.champion" :role="''"></PlayerSlot>
             </div>
       </Container>
-      <div class="continueButton" v-if="this.active">
+      <div class="continueButton">
         <md-button class="md-raised md-primary continueButton" @click="setDone('secondStep', 'third')">Continue</md-button>
       </div>
       
@@ -17,8 +17,7 @@
 import PlayerSlot from "./PlayerSlot.vue";
 import { Container } from "vue-smooth-dnd";
 export default {
-  props:["active"],
-  name: "BanArea",
+  name: "ActiveBanArea",
   data() {
     return {
       placeHolders: [
@@ -182,10 +181,6 @@ export default {
     Container
   },
   computed:{
-    bannerText(){
-      if(this.active) return "Drag'n'drop banned champions"
-      else return "Banned champions"
-    }
   }
 };
 </script>
