@@ -1,7 +1,7 @@
 # TensorFlow and tf.keras
 import tensorflow as tf
 from tensorflow import keras
-
+import os
 # Helper libraries
 import numpy as np
 import os
@@ -9,6 +9,7 @@ import LeagueDrafter_RESTAPI.db_connection as db_conn
 #from LeagueDrafter_RESTAPI.db_connection import dbConnector as db_conn
 
 #db_conn = db("sw703db.cgukp5oibqte.eu-central-1.rds.amazonaws.com", "SW703DB", "sw703", "sw703aoe")
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 dataset, wins, champions = db_conn.retrieveDataset()
 champions = sorted(champions)
@@ -47,22 +48,19 @@ def loadModel():
 
 def predictTeamComp(input):
     #trainModel()
-    pred = np.reshape(createTempComp(input), (1,10,8))
-    return trained_model.predict(pred)[0][0][0]
+    #pred = np.reshape(createTempComp(input), (1,10,8))
+    pred = createTempComp(input)
+    temp = np.array([pred, pred])
+    return trained_model.predict(temp)[0][0]
 
 
 def createTempComp(input):
-    resultTC = []
+    resultTC = np.zeros(141, dtype=int)
     for i in range(0,5):
-        k = []
-        k.append(1)
-        k.extend(champions[input[i]])
-        resultTC.append(k)
+        resultTC[input[i]] = 1
+
     for i in range(5,10):
-        k = []
-        k.append(-1)
-        k.extend(champions[input[i]])
-        resultTC.append(k)
-    return np.array(resultTC)
+        resultTC[input[i]] = -1
+    return resultTC
 
 trained_model = loadModel()
