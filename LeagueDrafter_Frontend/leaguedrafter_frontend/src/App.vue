@@ -13,17 +13,9 @@ export default {
   components: {
     'NavigationTab': NavigationTab
   },
-  methods:{
-    getChampions: function(){
-        this.$http.get(this.$api.champions.getChampions)
-        .then(response => {
-            this.$store.commit('setupChampions',response.data);
-        })
-    }
-  },
   created(){
-    this.getChampions();
-  }  
+    this.$store.dispatch('getChampions')
+  } 
 }
 </script>
 

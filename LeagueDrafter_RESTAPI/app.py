@@ -3,6 +3,7 @@ from flask import Flask
 import json
 from flask_cors import CORS
 from flask import request
+import LeagueDrafter_RESTAPI.MCTS as MCTS
 
 from LeagueDrafter_RESTAPI import initial_win_pred
 
@@ -47,8 +48,9 @@ def get_champions():
 @app.route('/api/post/currentState',methods=['POST'])
 def post_currentState():
     json_data = request.get_json(force=True)
-    data = json_data["allyFirstPick"]
-    return data
+    session_id = "1"
+    suggestions = MCTS.post_draft_turn(json_data,session_id)
+    return suggestions
 
 
 if __name__ == '__main__':

@@ -4,6 +4,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <div class="categoryTabs">
       <md-tabs md-alignment="left" @md-changed="tabChanged" :md-active-tab="setTab">
+        <md-tab v-if="this.bannedChampionCount != 0" id="tab-suggestion" md-label="Suggestions" md-icon="verified_user"></md-tab>
         <md-tab id="tab-all" md-label="All" md-icon="verified_user"></md-tab>
         <md-tab id="tab-fighter" md-label="Fighter" md-icon="verified_user"></md-tab>
         <md-tab id="tab-tank" md-label="Tank" md-icon="verified_user"></md-tab>
@@ -14,7 +15,7 @@
       </md-tabs>
     </div>
     <div class="searchBar">
-      <md-autocomplete id="searchField" v-model="searchTerm" :md-options="this.ChampionNames" :md-open-on-focus="false" @md-changed="searchChanged">
+      <md-autocomplete id="searchField" v-model="searchTerm" :md-options="this.championNames" :md-open-on-focus="false" @md-changed="searchChanged">
       <label>Search</label>
       </md-autocomplete>
       <template slot="md-autocomplete-item" slot-scope="{ item, term }"> ... </template>
@@ -28,29 +29,28 @@ export default {
     return{
       searchTerm:"",
       currentTag:"",
-      setTab:""
+      setTab:"",
     }
   },
   methods:{
     tabChanged:function(id){
       this.currentTag = id.split('-')[1];
-      this.$parent.filterChampions(this.currentTag,this.searchTerm.toLowerCase());
+      this.$store.commit('filterChampions',{tag:this.currentTag,searchString:this.searchTerm});
     },
     searchChanged:function(){
-      this.$parent.filterChampions(this.currentTag,this.searchTerm.toLowerCase());
+      this.$store.commit('filterChampions',{tag:this.currentTag,searchString:this.searchTerm});
     }
   },
   computed:{
-    ChampionNames(){
-      var champNames = [];
-      this.Champions.forEach(champion => {
-        champNames.push(champion.name);
-      });
-      return champNames;
+    champions(){
+      return this.$store.state.champions
+    },
+    championNames(){
+      return this.$store.getters.getChampionNames
+    },
+    bannedChampionCount(){
+      return this.$store.getters.getBannedChampionCount
     }
-  },
-  created(){
-    this.$parent.filterChampions(this.currentTag,this.searchTerm.toLowerCase());
   }
 }
 </script>

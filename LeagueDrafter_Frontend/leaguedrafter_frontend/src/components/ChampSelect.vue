@@ -1,13 +1,10 @@
 <template>
   <div class="container">
     <div>
-      <BanArea> </BanArea>
-    </div>
-    <div>
-      <ChampSelectTopBar :Champions="this.Champions"> </ChampSelectTopBar>
+      <ChampSelectTopBar> </ChampSelectTopBar>
     </div>
     <div id="grid-container">
-      <ChampSelectGrid :Champions="this.filteredChampions"> </ChampSelectGrid>
+      <ChampSelectGrid> </ChampSelectGrid>
     </div> 
   </div>
 </template>
@@ -16,38 +13,16 @@
 <script>
 import ChampSelectTopBar from './ChampSelectTopBar.vue'
 import ChampSelectGrid from './ChampSelectGrid.vue'
-import BanArea from './BanArea.vue'
 export default {
   data(){
     return{
-      filteredChampions:[],
-      Champions: []
     }
   },
   methods:{
-    getChampions: function(){
-        this.$http.get(this.$api.champions.getChampions)
-        .then(response => {
-            this.Champions = response.data;
-        })
-    },
-    filterChampions:function(tag,searchString){
-      if(tag === "all") this.filteredChampions = this.Champions;
-      else this.filteredChampions = this.Champions.filter((champion) => champion.tags.toLowerCase().includes(tag));
-      this.filteredChampions = this.filteredChampions.filter((champion) => champion.name.toLowerCase().includes(searchString.toLowerCase()));
-    }
   },
   components:{
     'ChampSelectTopBar':ChampSelectTopBar,
     'ChampSelectGrid':ChampSelectGrid,
-    BanArea
-  },
-  created(){
-    //this.getChampions();
-    this.filteredChampions = this.Champions;
-  },
-  mounted(){
-    this.filteredChampions = this.Champions;
   }
 }
 </script>
