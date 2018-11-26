@@ -89,6 +89,33 @@ def loadTree(session_id):
     root = cursor.execute('SELECT tree FROM pickled_tree WHERE id =%s ',id)
     return root
 
+def insert_winpercents():
+    conn = psy.connect(host=host, database=database, user=user, password=password)
+    cursor = conn.cursor()
+    for champion_id in range(0,141):
+        cursor.execute('SELECT COUNT(*) FROM player WHERE corrected_id =%s',[champion_id])
+        totalMatches = cursor.fetchone()[0]
+        cursor.execute('SELECT COUNT(*) FROM player p JOIN playerstats ps ON  p.playerstatsid = ps.playerstatsid'
+                              ' WHERE corrected_id =%s AND ps.win = TRUE', [champion_id])
+        wins = cursor.fetchone()[0]
+        winPercent = (100/totalMatches)*wins
+        cursor.execute('UPDATE champions SET win_pct = %s WHERE (corrected_id = %s)', (winPercent, champion_id))
+        conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def retrieve_winpercent():
+    conn = psy.connect(host=host, database=database, user=user, password=password)
+    cursor = conn.cursor()
+    champions = []
+    for champion_id in range(0, 141):
+        cursor.execute('SELECT win_pct FROM champions WHERE corrected_id =%s', [champion_id])
+        champions.append((champion_id, cursor.fetchone()[0]))
+    cursor.close()
+    conn.close()
+    return champions
+
 def saveTree(tree, id):
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
