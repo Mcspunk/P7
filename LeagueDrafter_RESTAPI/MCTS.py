@@ -290,22 +290,12 @@ def suggestions_to_json(suggestions):
 
 
 def game_state_from_json(json_object):
-    obj = json.loads(json_object)
-    ally_team = []
-    enemy_team = []
-    banned_champs = []
+    obj = json_object
 
     ally_starting = obj['ally_starting']
-    if ally_starting == "True":
-        ally_starting = True
-    else: ally_starting = False
-
-    for element in obj['ally_team']:
-        ally_team.append(element)
-    for element in obj['enemy_team']:
-        enemy_team.append(element)
-    for element in obj['banned_champs']:
-        banned_champs.append(element)
+    ally_team = obj['ally_team']
+    enemy_team = obj['enemy_team']
+    banned_champs = ['banned_champs']
 
     state = State(None, ally_starting)
     state.ally_team = ally_team

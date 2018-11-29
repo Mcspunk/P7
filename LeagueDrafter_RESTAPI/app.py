@@ -6,6 +6,7 @@ import json
 from flask_cors import CORS
 from flask import request
 import flask.sessions
+import LeagueDrafter_RESTAPI.MCTS as MCTS
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -65,7 +66,9 @@ def get_champions():
 @app.route('/api/post/currentState',methods=['POST'])
 def post_currentState():
     json_data = request.get_json(force=True)
-    return json.dumps(json_data)
+    session_id = "1"
+    suggestions = MCTS.post_draft_turn(json_data,session_id)
+    return suggestions
 
 
 if __name__ == '__main__':
