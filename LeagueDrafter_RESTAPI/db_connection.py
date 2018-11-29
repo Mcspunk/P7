@@ -1,7 +1,7 @@
 import psycopg2 as psy
 import pickle
 
-host = "sw703db.cgukp5oibqte.eu-central-1.rds.amazonaws.com"
+host = "restoreddb.cgukp5oibqte.eu-central-1.rds.amazonaws.com"
 database = "SW703DB"
 user = "sw703"
 password = "sw703aoe"

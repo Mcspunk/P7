@@ -1,6 +1,7 @@
 import math
 import random
 import json
+import time
 import LeagueDrafter_RESTAPI.initial_win_pred as NN
 import LeagueDrafter_RESTAPI.db_connection as db
 EXPLORATION_TERM = 2
@@ -59,22 +60,23 @@ def post_draft_turn(json, session_id):
     tree = db.loadTree(session_id)
     root_node = recall_subtree(state, tree, banned_champs)
     allowed_champions = list.copy(root_node.possible_actions)
-    suggestions, reduced_root = run_mcts(1000, root_node, True, allowed_champions)
+    suggestions, reduced_root = run_mcts(15, root_node, True, allowed_champions)
     db.saveTree(reduced_root, session_id) #Venter sådan set på at træ er gemt til databasen før vi returner suggestions
     json_suggestions = suggestions_to_json(suggestions)
     return json_suggestions
 
 
-def run_mcts(iterations, root, pair_of_champions, allowed_champions, suggested_amount=10):
-    x = 0
+def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=10):
+
+    now = time.time()
+    run_till = now.__add__(running_time)
     current_node = root
-    while x < iterations:
+    while run_till > time.time():
         selected_action = select(current_node)
         if not isinstance(selected_action, Node):
             new_node = expand(current_node, selected_action, allowed_champions)
             simulation_result = simulate(new_node)
             backprop(simulation_result, new_node)
-            x += 1
             continue
         else:
             current_node = selected_action
@@ -82,7 +84,6 @@ def run_mcts(iterations, root, pair_of_champions, allowed_champions, suggested_a
                 simulation_result = simulate(current_node)
                 backprop(simulation_result, current_node)
                 current_node = root
-                x += 1
 
     suggestions = get_suggestions(root, pair_of_champions, suggested_amount)
 
@@ -302,4 +303,3 @@ def game_state_from_json(json_object):
     state.enemy_team = enemy_team
 
     return state, set(banned_champs)
-

@@ -5,6 +5,7 @@ import random
 
 champions_sorted_by_winpercent = sorted(db.retrieve_winpercent(), key=lambda tup: tup[1])
 
+
 def pick_champ_enemy_team(available_champions, state):
     onemore = False
     available = list.copy(available_champions)
@@ -64,6 +65,5 @@ def evaluate_MCTS_UCT(number_of_eval):
         ite += 1
     return ally_wins, enemy_wins
 
-ally, enemy = evaluate_MCTS_UCT(1000)
-print(ally)
-print(enemy)
+
+#ally, enemy = evaluate_MCTS_UCT(1000)
