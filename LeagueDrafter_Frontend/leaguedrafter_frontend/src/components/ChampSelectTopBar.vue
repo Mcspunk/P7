@@ -3,14 +3,14 @@
   <div class="container">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <div class="categoryTabs">
-      <md-tabs md-alignment="left" @md-changed="tabChanged" :md-active-tab="setTab">
-        <md-tab v-if="this.bannedChampionCount != 0" id="tab-suggestion" md-label="Suggestions" md-icon="verified_user"></md-tab>
+      <md-tabs md-alignment="left" @md-changed="tabChanged" :md-active-tab="this.$store.state.activeTab">
+        <md-tab v-if="this.allyTurn" id="tab-suggestion" md-label="Suggestions" md-icon="verified_user"></md-tab>
         <md-tab id="tab-all" md-label="All" md-icon="verified_user"></md-tab>
         <md-tab id="tab-fighter" md-label="Fighter" md-icon="verified_user"></md-tab>
         <md-tab id="tab-tank" md-label="Tank" md-icon="verified_user"></md-tab>
         <md-tab id="tab-support" md-label="Support" md-icon="verified_user"></md-tab>
         <md-tab id="tab-mage" md-label="Mage" md-icon="verified_user"></md-tab>
-        <md-tab id="tab-assassin" md-label="Assassin" md-icon="verified_user"></md-tab>
+        <md-tab id="tab-assassin" md-label="Assassin" md-icon="../assets/roleIcons/Assassin_icon_new.svg"></md-tab>
         <md-tab id="tab-marksman" md-label="Marksman" md-icon="verified_user"></md-tab>
       </md-tabs>
     </div>
@@ -29,7 +29,7 @@ export default {
     return{
       searchTerm:"",
       currentTag:"",
-      setTab:"",
+
     }
   },
   methods:{
@@ -48,8 +48,8 @@ export default {
     championNames(){
       return this.$store.getters.getChampionNames
     },
-    bannedChampionCount(){
-      return this.$store.getters.getBannedChampionCount
+    allyTurn(){
+      return this.$store.state.allyTurn
     }
   }
 }

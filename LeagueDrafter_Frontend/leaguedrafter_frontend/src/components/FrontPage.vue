@@ -2,12 +2,11 @@
   <div class="content" v-loading.fullscreen.lock="this.loading"
     element-loading-text="Loading..."
     element-loading-background="rgba(0, 0, 0, 0.8)">
-    <md-steppers :md-active-step.sync="this.activeStepper" md-horizontal md-linear>
+    <md-steppers :md-active-step.sync="this.activeStepper" md-horizontal md-linear md-alternative>
       <md-step id="first" md-label="Picking order" :md-editable="false" :md-done.sync="this.firstStep">
           <div id="pickOrderContainer">
             <md-button @click="sidePicked('firstPick')" class="md-raised md-primary pickOrderButton">We have first pick</md-button>
-            <md-button @click="sidePicked('secondPick')" class="md-raised md-primary pickOrderButton">They have first pick</md-button>
-            <md-button @click="postData" class="md-raised md-primary">Send data</md-button>
+            <md-button @click="sidePicked('secondPick')" class="md-raised md-accent pickOrderButton">They have first pick</md-button>
           </div>
       </md-step>
       <md-step id="second" md-label="Ban phase" :md-editable="false" :md-done.sync="this.secondStep">
@@ -21,17 +20,15 @@
 
       <md-step id="third" md-label="Champion select" :md-editable="false" :md-done.sync="this.thirdStep">
         <div class="blueSide">
-          <team></team>
+          <team :isAllyTeam="true"></team>
         </div>
         <div class="champArea">
-          <InactiveBanArea> </InactiveBanArea>
+          <InactiveBanArea v-if="bannedChampionCount != 0"> </InactiveBanArea>
           <ChampSelect> </ChampSelect>
         </div>
         <div class="redSide">
-          <team></team>
+          <team :isAllyTeam="false"></team>
         </div>
-        
-        <md-button class="md-raised md-primary" @click="setDone('thirdStep')">Done</md-button>
       </md-step>
     </md-steppers>
   </div>
@@ -47,26 +44,13 @@ export default {
   name:"FrontPage",
   data(){
     return{
-      firstPick:null,
-      currentState:{
-        ally_starting:true,
-        ally_team:[108,103],
-        enemy_team:[130,85],
-        banned_champs:[0,1,2,3,4,5,6,7,8,9]
-      }
     }
   },
   methods: {
       sidePicked(input){
-        if(input==="firstPick") this.firstPick = true;
-        else this.firstPick = false;
+        if(input==="firstPick") this.$store.commit('isAllyStarting',{value:true})
+        else  this.$store.commit('isAllyStarting',{value:false})
         this.$store.commit('setStepperDone',{id:'firstStep', index:'second'});
-      },
-      postData(){
-        this.$http.post(this.$api.MCTS.postCurrentState, this.currentState)
-        .then(response =>{
-          console.log(response)
-        })
       },
       setDone(idIn){
          this.$store.commit('setStepperDone',{id:idIn});
@@ -93,6 +77,12 @@ export default {
     },
     thirdStep(){
       return this.$store.state.thirdStep
+    },
+    currentState(){
+      return this.$store.getters.getCurrentState
+    },
+    bannedChampionCount(){
+      return this.$store.getters.getBannedChampionCount
     }
   }
 }
@@ -108,18 +98,20 @@ export default {
 .blueSide{
   float:left;
   position: relative;
-  width:15%;
+  width:10%;
   height:100%;
   display:block;
+  margin-top:77px;
   background-color: rgb(28, 123, 179);
 }
 
 .redSide{
   float:right;
   position: relative;
-  width:15%;
+  width:10%;
   height:100%;
   display:block;
+  margin-top:77px;
   background-color: rgb(219, 58, 58);
 }
 
@@ -133,10 +125,10 @@ export default {
 
 .champArea{
   position:relative;
-  width:70%;
+  width:80%;
   height:100%;
   display:inline-block;
-  background-color: rgb(151, 150, 150);
+  background-color: rgb(49, 49, 49);
 }
 .pickOrderButton{
   width: 50%;

@@ -1,21 +1,39 @@
+import datetime
+import uuid
 import psycopg2 as psycopg2
 from flask import Flask
 import json
 from flask_cors import CORS
 from flask import request
-
-from LeagueDrafter_RESTAPI import initial_win_pred
+import flask.sessions
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+session = flask.session
+app.secret_key = "b\"\\xa7'\\x19\\xde\\x91_\\x1b\\xe0L'\\xd2\\xc0O\\xae\\x12\\xfe"
+app.config['SESSION_TYPE'] = 'filesystem'
+
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = datetime.timedelta(minutes=10)
+    session.modified = True
+
+@app.route('/api/checksession/')
+def session_check():
+    if 'uid' in session:
+        return flask.Response(status=200)
+    else: return flask.Response(status=204)
+
+@app.route('/api/newsession/')
+def create_session():
+    session['uid'] = str(uuid.uuid4())
+    return flask.Response(status=200)
 
 @app.route('/')
 def hello_world():
     return 'Hello World!'
-
-@app.route('/nn')
-def test():
-    return str(initial_win_pred.predictTeamComp([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
 
 def fetch_champions():
     """ query data from the vendors table """
@@ -47,8 +65,7 @@ def get_champions():
 @app.route('/api/post/currentState',methods=['POST'])
 def post_currentState():
     json_data = request.get_json(force=True)
-    data = json_data["ally_starting"]
-    return json.dumps(data)
+    return json.dumps(json_data)
 
 
 if __name__ == '__main__':

@@ -1,16 +1,23 @@
 <template>
-  <div class="container">
-    <Container :get-child-payload="getPayload" :group-name="'champGrid'" :orientation="'horizontal'" behaviour="move">
+
+  <div class="Outercontainer">
+      <VuePerfectScrollbar class="test">
+    <Container :get-child-payload="getPayload" :group-name="'champGrid'" :orientation="'horizontal'" behaviour="drop-zone">
         <Draggable v-for="Champion in this.filteredChampions" :key="Champion.id" :class="determineDraggable(Champion)">
             <ChampionBox :champion="Champion" class="championSlot"> </ChampionBox>
         </Draggable>
     </Container>
+      </VuePerfectScrollbar>
   </div>
+
 </template>
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
 import ChampionBox from './ChampionBox.vue'
+import SimpleBar from 'simplebar-vue'
+import 'simplebar/dist/simplebar.min.css'
+import VuePerfectScrollbar from 'vue-perfect-scrollbar'
 export default {
   data(){
     return{
@@ -27,7 +34,7 @@ export default {
     }
   },
   components:{
-    ChampionBox,Container,Draggable
+    ChampionBox,Container,Draggable,SimpleBar,VuePerfectScrollbar
   },
   computed:{
     filteredChampions(){
@@ -49,6 +56,9 @@ export default {
     justify-content: flex-start;
     margin-left:4%;
   }
+  .Outercontainer{
+    margin-left:4%;
+  }
   .championSlot{
     display:inline-block;
     margin:8px;
@@ -60,5 +70,8 @@ export default {
     pointer-events: none;
 
   }
+  .test {
+  height: 500px;
+}
 
 </style>

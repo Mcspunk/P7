@@ -9,7 +9,7 @@ import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default-dark.css' // This line here
 import 'element-ui/lib/theme-chalk/index.css';
-import { MdButton, MdTabs, MdIcon,MdSteppers } from 'vue-material/dist/components'
+import { MdButton, MdTabs, MdIcon, MdSteppers } from 'vue-material/dist/components'
 import { Loading } from 'element-ui'
 Vue.use(MdButton)
 Vue.use(VueMaterial)
@@ -20,7 +20,6 @@ Vue.use(MdSteppers)
 Vue.use(Vuex)
 Vue.config.productionTip = false
 
-
 Vue.prototype.$http = api
 Vue.prototype.$api = apiRoutes
 Vue.prototype.$apiUrl = apiUrl
@@ -30,13 +29,54 @@ const store = new Vuex.Store({
     champions:[],
     filteredChampions:[],
     bannedChampions:[],
+    allyTeam:[],
+    enemyTeam:[],
+    suggestedChampions:[],
     loading:true,
     activeStepper:'first',
+    ally_starting:false,
     firstStep: false,
     secondStep: false,
-    thirdStep: false
+    thirdStep: false,
+    allyTurn:null,
+    activeTab:"tab-all"
   },
   mutations:{
+    changeTurn(state){
+      state.allyTurn = !state.allyTurn
+      if(state.allyTurn){
+        state.activeTab ="tab-suggestion"
+        store.commit('sendState')
+      } 
+      else{
+        state.activeTab = "tab-all"
+      } 
+    },
+    isAllyStarting(state,payload){
+      state.ally_starting = payload.value
+    },
+    sendState(state){
+      Vue.prototype.$http.post(Vue.prototype.$api.MCTS.postCurrentState, store.getters.getCurrentState)
+      .then(response =>{
+        console.log(response)
+      })
+    },
+    gotoPickPhase(state){
+      state.allyTurn = state.ally_starting;
+      if(state.ally_starting){
+        state.activeTab = "tab-suggestion"
+        store.commit('sendState')
+      } 
+    },
+    addToTeam(state,payload){
+      state[payload.team].push(payload.champion)
+    },
+    removeFromTeam(state,payload){
+      var startIndex = state[payload.team].findIndex(champ => champ.newId === payload.champion.newId);
+      state[payload.team].splice(startIndex,1)
+      console.log(state.allyTeam);
+      console.log(state.enemyTeam);
+    },
     setupChampions(state, payload){
       payload.forEach(champ => {
         champ = Object.assign({},champ,{
@@ -71,7 +111,6 @@ const store = new Vuex.Store({
       payload.champions.forEach(champ => {
         state.bannedChampions.push(champ.champion)
       });
-      console.log(state.bannedChampions)
     }
   },
   getters: {
@@ -84,10 +123,38 @@ const store = new Vuex.Store({
     },
     getBannedChampionCount: state => {
       return state.bannedChampions.length
+    },
+    getCurrentState: state => {
+      return {
+        ally_starting:state.ally_starting,
+        ally_team:state.allyTeam.map(x => x.newId),
+        enemy_team:state.enemyTeam.map(x => x.newId),
+        banned_champs:state.bannedChampions.map(x => x.newId)
+      }
+    },
+    validState: state => {
+      if(state.ally_starting && state.allyTurn && (state.allyTeam.length - state.enemyTeam.length) === 1 ) return true;
+      if(state.ally_starting && !state.allyTurn && (state.enemyTeam.length - state.allyTeam.length) === 1) return true;
+      if(!state.ally_starting && state.allyTurn && (state.allyTeam.length - state.enemyTeam.length) === 1) return true;
+      if(!state.ally_starting && !state.allyTurn && (state.enemyTeam.length - state.allyTeam.length) === 1 ) return true;
+      if(state.allyTeam.length === 5 && state.enemyTeam.length === 5) return true;
+      return false; 
+
     }
   },
   actions:{
     getChampions({commit}){
+      Vue.prototype.$http.get(Vue.prototype.$api.sessions.checkSession)
+        .then(response => {
+          if(response.status === 204){
+            Vue.prototype.$http.get(Vue.prototype.$api.sessions.createSession)
+              .then(secondReponse => {
+                if(secondReponse.status === 200) console.log("Session created succesfully")
+                else console.log("Session failed to be created")
+              })
+          }
+          else console.log("Session already exists")
+        })
       Vue.prototype.$http.get(Vue.prototype.$api.champions.getChampions)
         .then(response => {
             commit('setupChampions',response.data);

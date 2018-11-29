@@ -4,10 +4,6 @@
        <div class="banSlot" @click="removeChampion(placeHolder)" v-for="bannedChampion in this.bannedChampions" :key="bannedChampion.newId">
           <ChampionBox class="champSlot" :champion="bannedChampion"> </ChampionBox>
        </div>
-      <div class="continueButton">
-        <md-button class="md-raised md-primary continueButton" @click="setDone('secondStep', 'third')">Continue</md-button>
-      </div>
-      
   </div>
 </template>
 
@@ -20,10 +16,6 @@ export default {
     }
   },
   methods: {
-    setDone(arg1,arg2){
-      this.$store.commit('setStepperDone',{id:arg1,index:arg2})
-      //this.$parent.$parent.methods.setDone(arg1,arg2);
-    }
   },
   components: {
     ChampionBox

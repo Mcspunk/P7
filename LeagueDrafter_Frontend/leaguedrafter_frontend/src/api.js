@@ -16,6 +16,10 @@ const apiRoutes = {
     },
     MCTS:{
         postCurrentState: 'post/currentState'
+    },
+    sessions:{
+        checkSession: 'checksession',
+        createSession: 'newsession'
     }
 }
 

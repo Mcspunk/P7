@@ -5,7 +5,8 @@
     </div>
     <div id="grid-container">
       <ChampSelectGrid> </ChampSelectGrid>
-    </div> 
+    </div>
+      <md-button id="lock-btn" class="md-raised md-primary" @click="changeTurn" v-if="this.$store.state.allyTurn != null" :disabled="!getValidState">Lock In</md-button>
   </div>
 </template>
 
@@ -19,10 +20,18 @@ export default {
     }
   },
   methods:{
+    changeTurn(){
+      this.$store.commit('changeTurn')
+    }
   },
   components:{
     'ChampSelectTopBar':ChampSelectTopBar,
     'ChampSelectGrid':ChampSelectGrid,
+  },
+  computed:{
+    getValidState(){
+      return this.$store.getters.validState
+    }
   }
 }
 </script>
@@ -34,7 +43,13 @@ export default {
   display:block;
 }
 #grid-container{
-  overflow-y:scroll;
+  background-color: rgb(35, 35, 36);
   height: 500px;
+}
+#lock-btn{
+  margin-left:40%;
+  width:20%;
+  height:75px;
+
 }
 </style>
