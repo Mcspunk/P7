@@ -6,18 +6,6 @@ database = "SW703DB"
 user = "sw703"
 password = "sw703aoe"
 
-def retrieveWins():
-    conn = psy.connect(host=host, database=database, user=user, password=password)
-    cursor = conn.cursor()
-    Wins = []
-    cursor.execute('SELECT win FROM playerstats ps JOIN player p ON ps.playerstatsid = p.playerstatsid WHERE playerid % 10 = 0 ORDER BY playerid ASC LIMIT 100')
-    row = cursor.fetchone()
-    while row is not None:
-        Wins.append(row)
-        row = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return
 
 def retrieveDataset():
     amountOfChamps = 141
