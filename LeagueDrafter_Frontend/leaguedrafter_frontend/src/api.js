@@ -25,7 +25,8 @@ const apiRoutes = {
 
 const api = axios.create({
     baseURL: apiUrl,
-    withCredentials:true
+    withCredentials:true,
+    credentials:'same-origin'
 })
 
 

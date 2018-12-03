@@ -10,7 +10,7 @@ import flask.sessions
 #import MCTS as MCTS
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/api/*": {"origins": "*",}})
+cors = CORS(app,supports_credentials=True, resources={r"/api/*": {"origins": "*","supports_credentials":True}})
 app.secret_key = "b\"\\xa7'\\x19\\xde\\x91_\\x1b\\xe0L'\\xd2\\xc0O\\xae\\x12\\xfe"
 app.permanent_session_lifetime = datetime.timedelta(minutes=10)
 currentSession = []
@@ -22,6 +22,7 @@ def session_check():
     resp = make_response()
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
     resp.headers['Access-Control-Allow-Origin'] = "http://127.0.0.2:8080"
+
     try:
         payload = jwt.decode(sess_cookie,app.secret_key)
         return resp,200
@@ -42,8 +43,7 @@ def create_session():
     resp = make_response()
     resp.headers['Access-Control-Allow-Origin'] = "http://127.0.0.2:8080"
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    resp.headers['Credentials'] = "same-origin"
-    resp.set_cookie("session",jwt.encode(payload,app.secret_key,algorithm="HS256"),expires=payload['exp'],domain="http://127.0.0.2:8080")
+    resp.set_cookie("sesh",jwt.encode(payload,app.secret_key,algorithm="HS256"),expires=payload['exp'],domain="127.0.0.2")
     return resp
 
 @app.route('/')

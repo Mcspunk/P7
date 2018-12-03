@@ -24,6 +24,11 @@ Vue.prototype.$http = api
 Vue.prototype.$api = apiRoutes
 Vue.prototype.$apiUrl = apiUrl
 
+var postOptions = {
+  withCredentials:true,
+  credentials:'same-origin'
+}
+
 const store = new Vuex.Store({
   state:{
     champions:[],
@@ -144,28 +149,25 @@ const store = new Vuex.Store({
   },
   actions:{
     getChampions({commit}){
-      Vue.prototype.$http.get(Vue.prototype.$api.sessions.checkSession)
-        .then(response => {
-          if(response.status === 204){
-            Vue.prototype.$http.post(Vue.prototype.$api.sessions.createSession)
-              .then(secondReponse => {
-                console.log(secondReponse)
-                if(secondReponse.status === 200) {
-                  console.log("Session created succesfully")
-                  Vue.prototype.$http.get(Vue.prototype.$api.sessions.checkSession)
-                }
-                else console.log("Session failed to be created")
-              })
-          }
-          else console.log("Session already exists")
-        })
+      fetch('http://127.0.0.1:5000/api/post/newsession/',{
+        method:'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type':'application/json'
+        },
+        credentials:'include',
+        withCredentials:true,
+      }).then(response => {
+        console.log(response)
+      })
+    }
+
       //Vue.prototype.$http.get(Vue.prototype.$api.champions.getChampions)
       //  .then(response => {
       //      commit('setupChampions',response.data);
       //      commit('setLoading',false);
       //  })
     }
-  }
 })
 
 /* eslint-disable no-new */
