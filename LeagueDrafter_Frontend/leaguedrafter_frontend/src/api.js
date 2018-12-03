@@ -12,19 +12,20 @@ const apiRoutes = {
         return `${apiUrl}${url}`
     },
     champions: {
-        getChampions: 'get/champions'
+        getChampions: 'get/champions/'
     },
     MCTS:{
-        postCurrentState: 'post/currentState'
+        postCurrentState: 'post/currentState/'
     },
     sessions:{
-        checkSession: 'checksession',
-        createSession: 'newsession'
+        checkSession: 'get/checksession/',
+        createSession: 'post/newsession/'
     }
 }
 
 const api = axios.create({
-    baseURL: apiUrl
+    baseURL: apiUrl,
+    withCredentials:true
 })
 
 

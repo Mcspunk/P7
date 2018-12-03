@@ -147,19 +147,23 @@ const store = new Vuex.Store({
       Vue.prototype.$http.get(Vue.prototype.$api.sessions.checkSession)
         .then(response => {
           if(response.status === 204){
-            Vue.prototype.$http.get(Vue.prototype.$api.sessions.createSession)
+            Vue.prototype.$http.post(Vue.prototype.$api.sessions.createSession)
               .then(secondReponse => {
-                if(secondReponse.status === 200) console.log("Session created succesfully")
+                console.log(secondReponse)
+                if(secondReponse.status === 200) {
+                  console.log("Session created succesfully")
+                  Vue.prototype.$http.get(Vue.prototype.$api.sessions.checkSession)
+                }
                 else console.log("Session failed to be created")
               })
           }
           else console.log("Session already exists")
         })
-      Vue.prototype.$http.get(Vue.prototype.$api.champions.getChampions)
-        .then(response => {
-            commit('setupChampions',response.data);
-            commit('setLoading',false);
-        })
+      //Vue.prototype.$http.get(Vue.prototype.$api.champions.getChampions)
+      //  .then(response => {
+      //      commit('setupChampions',response.data);
+      //      commit('setLoading',false);
+      //  })
     }
   }
 })
