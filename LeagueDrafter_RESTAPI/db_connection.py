@@ -1,23 +1,11 @@
 import psycopg2 as psy
 import pickle
 
-host = "sw703db.cgukp5oibqte.eu-central-1.rds.amazonaws.com"
+host = "restoreddb.cgukp5oibqte.eu-central-1.rds.amazonaws.com"
 database = "SW703DB"
 user = "sw703"
 password = "sw703aoe"
 
-def retrieveWins():
-    conn = psy.connect(host=host, database=database, user=user, password=password)
-    cursor = conn.cursor()
-    Wins = []
-    cursor.execute('SELECT win FROM playerstats ps JOIN player p ON ps.playerstatsid = p.playerstatsid WHERE playerid % 10 = 0 ORDER BY playerid ASC LIMIT 100')
-    row = cursor.fetchone()
-    while row is not None:
-        Wins.append(row)
-        row = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return
 
 def retrieveDataset():
     amountOfChamps = 141
@@ -88,6 +76,33 @@ def loadTree(session_id):
     cursor = conn.cursor()
     root = cursor.execute('SELECT tree FROM pickled_tree WHERE id = ${id} ')
     return root
+
+def insert_winpercents():
+    conn = psy.connect(host=host, database=database, user=user, password=password)
+    cursor = conn.cursor()
+    for champion_id in range(0,141):
+        cursor.execute('SELECT COUNT(*) FROM player WHERE corrected_id =%s',[champion_id])
+        totalMatches = cursor.fetchone()[0]
+        cursor.execute('SELECT COUNT(*) FROM player p JOIN playerstats ps ON  p.playerstatsid = ps.playerstatsid'
+                              ' WHERE corrected_id =%s AND ps.win = TRUE', [champion_id])
+        wins = cursor.fetchone()[0]
+        winPercent = (100/totalMatches)*wins
+        cursor.execute('UPDATE champions SET win_pct = %s WHERE (corrected_id = %s)', (winPercent, champion_id))
+        conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def retrieve_winpercent():
+    conn = psy.connect(host=host, database=database, user=user, password=password)
+    cursor = conn.cursor()
+    champions = []
+    for champion_id in range(0, 141):
+        cursor.execute('SELECT win_pct FROM champions WHERE corrected_id =%s', [champion_id])
+        champions.append((champion_id, cursor.fetchone()[0]))
+    cursor.close()
+    conn.close()
+    return champions
 
 def saveTree(tree, id):
     conn = psy.connect(host=host, database=database, user=user, password=password)
