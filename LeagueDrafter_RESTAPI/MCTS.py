@@ -1,6 +1,7 @@
 import math
 import random
 import json
+import time
 import initial_win_pred as NN
 import db_connection as db
 EXPLORATION_TERM = 2
