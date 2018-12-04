@@ -149,24 +149,26 @@ const store = new Vuex.Store({
   },
   actions:{
     getChampions({commit}){
-      fetch('http://backend.leaguedraft.gg/api/post/newsession/',{
-        method:'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type':'application/json'
-        },
-        credentials:'include',
-        withCredentials:true,
-      }).then(response => {
-        console.log(response)
-      })
+      Vue.prototype.$http.get(Vue.prototype.$api.champions.getChampions)
+        .then(response => {
+            commit('setupChampions',response.data);
+            commit('setLoading',false);
+        })
+    },
+    createSession({commit}){
+      var cookieFound = false
+      Vue.prototype.$http.get(Vue.prototype.$api.sessions.checkSession)
+        .then(response => {
+          if(response.status === 200) cookieFound = true;
+        })
+      if(!cookieFound){
+        Vue.prototype.$http.post(Vue.prototype.$api.sessions.createSession)
+        .then(response => {
+          if(response.status === 200) cookieFound = true;
+        })
+      }
+      if(!cookieFound) console.log("Session not created correctly in backend")
     }
-
-      //Vue.prototype.$http.get(Vue.prototype.$api.champions.getChampions)
-      //  .then(response => {
-      //      commit('setupChampions',response.data);
-      //      commit('setLoading',false);
-      //  })
     }
 })
 

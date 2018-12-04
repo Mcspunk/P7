@@ -18,6 +18,7 @@ export default {
     'NavigationTab': NavigationTab, VuePerfectScrollbar
   },
   created(){
+    this.$store.dispatch('createSession')
     this.$store.dispatch('getChampions')
   } 
 }

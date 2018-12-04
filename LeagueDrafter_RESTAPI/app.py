@@ -8,7 +8,7 @@ import json
 from flask_cors import CORS
 from flask import request
 import flask.sessions
-#import MCTS as MCTS
+import MCTS as MCTS
 
 app = Flask(__name__)
 cors = CORS(app,supports_credentials=True, resources={r"/api/*": {"origins": "*","supports_credentials":True}})
@@ -20,9 +20,10 @@ currentSession = []
 @app.route('/api/get/checksession/',methods=['GET'])
 def session_check():
     sess_cookie = request.cookies.get("session")
+    print(sess_cookie)
     resp = make_response()
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    resp.headers['Access-Control-Allow-Origin'] = "http://127.65.43.21"
+    resp.headers['Access-Control-Allow-Origin'] = "http://frontend.leaguedraft.gg"
 
     try:
         payload = jwt.decode(sess_cookie,app.secret_key)
@@ -36,7 +37,6 @@ def session_check():
 @app.route('/api/post/newsession/',methods=['POST'])
 def create_session():
     sess_cookie = request.cookies.get("session")
-    print(sess_cookie)
     payload = {
         'exp': datetime.datetime.utcnow() + app.permanent_session_lifetime,
         'iat': datetime.datetime.utcnow(),
@@ -72,19 +72,19 @@ def fetch_champions():
             conn.close()
 
 
-#champions = fetch_champions()
+champions = fetch_champions()
 
-@app.route('/api/get/champions')
+@app.route('/api/get/champions/',methods=['GET'])
 def get_champions():
-    return flask.Response(status=200)
+    return champions
 
-@app.route('/api/post/currentState',methods=['POST'])
+@app.route('/api/post/currentState/',methods=['POST'])
 def post_currentState():
     json_data = request.get_json(force=True)
     payload = jwt.decode(request.cookies.get("session"), app.secret_key)
     session_id = payload['sub']
-    #suggestions = MCTS.post_draft_turn(json_data,session_id)
-    return 0
+    suggestions = MCTS.post_draft_turn(json_data,session_id)
+    return suggestions
 
 
 if __name__ == '__main__':

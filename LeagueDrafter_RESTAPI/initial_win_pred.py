@@ -10,7 +10,7 @@ import db_connection as db_conn
 
 #db_conn = db("sw703db.cgukp5oibqte.eu-central-1.rds.amazonaws.com", "SW703DB", "sw703", "sw703aoe")
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
+'''
 dataset, wins, champions = db_conn.retrieveDataset()
 champions = sorted(champions)
 
@@ -40,6 +40,7 @@ def trainModel():
     model.fit(train_data, train_labels, epochs=5, batch_size=32)
     model.save('savedNetwork.h5')
     test_loss, test_acc = model.evaluate(test_data, test_labels)
+'''
 
 def loadModel():
     model = keras.models.load_model('savedNetwork.h5')

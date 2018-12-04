@@ -4,8 +4,7 @@ import Vue from 'vue'
 
 Vue.use(axios)
 
-//const apiUrl = 'http://127.0.0.1:5000/api'
-const apiUrl = 'http://backend.leaguedraft.gg'
+const apiUrl = 'http://backend.leaguedraft.gg/api'
 //API routes
 const apiRoutes = {
     base: (url) => {
