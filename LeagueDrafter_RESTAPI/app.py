@@ -1,6 +1,7 @@
 import datetime
 import uuid
 import jwt
+from random import *
 import psycopg2 as psycopg2
 from flask import Flask, make_response
 import json
@@ -21,7 +22,7 @@ def session_check():
     sess_cookie = request.cookies.get("session")
     resp = make_response()
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    resp.headers['Access-Control-Allow-Origin'] = "http://127.0.0.2:8080"
+    resp.headers['Access-Control-Allow-Origin'] = "http://127.65.43.21"
 
     try:
         payload = jwt.decode(sess_cookie,app.secret_key)
@@ -34,6 +35,8 @@ def session_check():
 
 @app.route('/api/post/newsession/',methods=['POST'])
 def create_session():
+    sess_cookie = request.cookies.get("session")
+    print(sess_cookie)
     payload = {
         'exp': datetime.datetime.utcnow() + app.permanent_session_lifetime,
         'iat': datetime.datetime.utcnow(),
@@ -41,9 +44,9 @@ def create_session():
     }
     currentSession.append(payload)
     resp = make_response()
-    resp.headers['Access-Control-Allow-Origin'] = "http://127.0.0.2:8080"
+    resp.headers['Access-Control-Allow-Origin'] = "http://frontend.leaguedraft.gg"
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    resp.set_cookie("sesh",jwt.encode(payload,app.secret_key,algorithm="HS256"),expires=payload['exp'],domain="127.0.0.2")
+    resp.set_cookie("session", jwt.encode(payload,app.secret_key,algorithm="HS256"),expires=payload['exp'],domain='.leaguedraft.gg')
     return resp
 
 @app.route('/')
@@ -85,5 +88,5 @@ def post_currentState():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='127.0.0.1', port="5000")
 

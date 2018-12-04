@@ -149,7 +149,7 @@ const store = new Vuex.Store({
   },
   actions:{
     getChampions({commit}){
-      fetch('http://127.0.0.1:5000/api/post/newsession/',{
+      fetch('http://backend.leaguedraft.gg/api/post/newsession/',{
         method:'POST',
         headers: {
           Accept: 'application/json',
