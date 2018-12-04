@@ -86,7 +86,7 @@ def loadTree(session_id):
     id = session_id
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
-    root = cursor.execute('SELECT tree FROM pickled_tree WHERE id = ${id} ')
+    root = cursor.execute('SELECT tree FROM pickled_tree WHERE id = \'{0}\''.format(id))
     return root
 
 def saveTree(tree, id):
