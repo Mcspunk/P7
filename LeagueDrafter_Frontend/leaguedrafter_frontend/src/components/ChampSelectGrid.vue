@@ -1,6 +1,6 @@
 <template>
 
-  <div class="Outercontainer">
+  <div class="Outercontainer" >
       <VuePerfectScrollbar class="test">
     <Container :get-child-payload="getPayload" :group-name="'champGrid'" :orientation="'horizontal'" behaviour="drop-zone">
         <Draggable v-for="Champion in this.filteredChampions" :key="Champion.id" :class="determineDraggable(Champion)">

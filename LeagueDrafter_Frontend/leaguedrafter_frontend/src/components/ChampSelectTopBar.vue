@@ -10,7 +10,7 @@
         <md-tab id="tab-tank" md-label="Tank" md-icon="verified_user"></md-tab>
         <md-tab id="tab-support" md-label="Support" md-icon="verified_user"></md-tab>
         <md-tab id="tab-mage" md-label="Mage" md-icon="verified_user"></md-tab>
-        <md-tab id="tab-assassin" md-label="Assassin" md-icon="../assets/roleIcons/Assassin_icon_new.svg"></md-tab>
+        <md-tab id="tab-assassin" md-label="Assassin" md-icon="verified_user"></md-tab>
         <md-tab id="tab-marksman" md-label="Marksman" md-icon="verified_user"></md-tab>
       </md-tabs>
     </div>

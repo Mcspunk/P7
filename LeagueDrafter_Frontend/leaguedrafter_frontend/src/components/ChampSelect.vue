@@ -3,7 +3,9 @@
     <div>
       <ChampSelectTopBar> </ChampSelectTopBar>
     </div>
-    <div id="grid-container">
+    <div id="grid-container" v-loading="this.$store.state.loadSuggestions"
+    element-loading-text="Calculating suggestions"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
       <ChampSelectGrid> </ChampSelectGrid>
     </div>
       <md-button id="lock-btn" class="md-raised md-primary" @click="changeTurn" v-if="this.$store.state.allyTurn != null" :disabled="!getValidState">Lock In</md-button>

@@ -1,7 +1,8 @@
 <template>
   <div class="OuterContainer" v-loading="!this.myTurn"
     element-loading-text="Please pick for the other team"
-    element-loading-background="rgba(0, 0, 0, 0.8)">
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+    element-loading-spinner="../assets/roleIcons/Mage_icon.png">
        <Container class="dropContainer" :should-accept-drop="() => myTurn" :should-animate-drop="() => false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop('placeHolders', $event, placeHolder.id)">
             <div @click="removeChampion(placeHolder)">
               <PlayerSlot :champion="placeHolder.champion" :role="placeHolder.role"></PlayerSlot>

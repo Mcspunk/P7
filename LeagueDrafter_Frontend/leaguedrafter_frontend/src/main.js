@@ -23,7 +23,6 @@ Vue.config.productionTip = false
 Vue.prototype.$http = api
 Vue.prototype.$api = apiRoutes
 Vue.prototype.$apiUrl = apiUrl
-
 var postOptions = {
   withCredentials:true,
   credentials:'same-origin'
@@ -44,7 +43,8 @@ const store = new Vuex.Store({
     secondStep: false,
     thirdStep: false,
     allyTurn:null,
-    activeTab:"tab-all"
+    activeTab:"tab-all",
+    loadSuggestions:false
   },
   mutations:{
     changeTurn(state){
@@ -54,6 +54,7 @@ const store = new Vuex.Store({
         store.commit('sendState')
       } 
       else{
+        state.suggestedChampions = []
         state.activeTab = "tab-all"
       } 
     },
@@ -63,7 +64,17 @@ const store = new Vuex.Store({
     sendState(state){
       Vue.prototype.$http.post(Vue.prototype.$api.MCTS.postCurrentState, store.getters.getCurrentState)
       .then(response =>{
-        console.log(response)
+        var suggChamps = []
+        response.data.forEach(element => {
+          suggChamps.push(state.champions.find(champ => champ.newId === element[0]))
+          if(element[1] != null){
+            suggChamps.push(state.champions.find(champ => champ.newId === element[1]))
+          } 
+        });
+        state.suggestedChampions = suggChamps
+        console.log(state.suggestedChampions[0])
+        state.loadSuggestions = false;
+        store.commit('filterChampions',{tag:"suggestion",searchString:""})
       })
     },
     gotoPickPhase(state){
@@ -95,6 +106,10 @@ const store = new Vuex.Store({
     filterChampions(state,payload){
       var filteredChampions = []
       if(payload.tag === "all") filteredChampions = state.champions;
+      else if(payload.tag ==='suggestion'){
+        if(state.suggestedChampions.length === 0) state.loadSuggestions = true;
+        filteredChampions = state.suggestedChampions
+      } 
       else filteredChampions = state.champions.filter((champion) => champion.tags.toLowerCase().includes(payload.tag));
       filteredChampions = filteredChampions.filter((champion) => champion.name.toLowerCase().includes(payload.searchString.toLowerCase()));
       state.filteredChampions = filteredChampions;
