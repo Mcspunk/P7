@@ -296,7 +296,7 @@ def game_state_from_json(json_object):
     ally_starting = obj['ally_starting']
     ally_team = obj['ally_team']
     enemy_team = obj['enemy_team']
-    banned_champs = ['banned_champs']
+    banned_champs = obj['banned_champs']
 
     state = State(None, ally_starting)
     state.ally_team = ally_team
