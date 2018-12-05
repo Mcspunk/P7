@@ -148,7 +148,7 @@ def test_select2(tree: mcts.Node):
     assert mcts.select(tree(simple_state, 5).children[1]).value == 5
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def node():
     simple_state = mcts.State()
     simple_state.ally_team = []
@@ -175,7 +175,7 @@ def test_expand_possible_actions(node):
 def test_expand_children(node):
     mcts.expand(node, 130, {1, 2})
 
-    assert len(node.children) == 1
+    assert 1 == len(node.children)
 
 
 def test_expand_new_state(node):
