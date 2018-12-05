@@ -305,3 +305,9 @@ def game_state_from_json(json_object):
     state.enemy_team = enemy_team
 
     return state, set(banned_champs)
+
+state = State()
+state.ally_starting = False
+state.enemy_team = [1]
+state.ally_team = []
+print(is_dual_return(state))
