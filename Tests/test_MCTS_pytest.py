@@ -71,13 +71,6 @@ def tree():
     return _tree
 
 
-# lazy fixtures: https://pypi.org/project/pytest-lazy-fixture/#
-# @pytest.mark.parametrize("test_input,expected", [
-#    (some_state, True),
-#    (some_state2, False),
-# ])
-
-
 def test_is_dual_return(some_state):
     assert mcts.is_dual_return(some_state)
 
@@ -200,7 +193,27 @@ def test_find_new_state(node):
     new_state = mcts.find_new_state(130, node)
     assert new_state.ally_team == [130]
 
-#"simulate" skal muligvis lige lade være med at køre netværket for at kunne teste ordentligt
+
+def test_simulate(some_state):
+    possible = [0,2,3,4,5,6,7,8,9]
+    node = mcts.Node(possible, some_state)
+    output = mcts.simulate(node)
+    assert all(elem in output for elem in possible)
+
+
+def test_simulate2(some_state):
+    possible = [0,2,3,4,5,6,7,8,9]
+    not_possible = range(10,142)
+    node = mcts.Node(possible, some_state)
+    output = mcts.simulate(node)
+    assert not any(elem in output for elem in not_possible)
+
+
+def test_simulate3(some_state):
+    possible = [0,2,3,4,5,6,7,8,9]
+    node = mcts.Node(possible, some_state)
+    output = mcts.simulate(node)[5:]
+    assert output.__contains__(1)
 
 
 def test_backprop_node11_value(tree: mcts.Node):
