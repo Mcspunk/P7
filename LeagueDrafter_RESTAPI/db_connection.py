@@ -6,6 +6,43 @@ database = "SW703DB"
 user = "sw703"
 password = "sw703aoe"
 
+# SELECT corrected_id FROM player ORDER BY playerid ASC LIMIT 10
+# SELECT * FROM bans WHERE match.banid == bans.banid
+#SELECT banid FROM match WHERE players.playersid == $s AND match.banid == bans.banid
+#SELECT player.id FROM player
+
+
+def get_matches(number_of_matches):
+    team1 = []
+    team2 = []
+    match_list= []
+    rows_to_collect = number_of_matches*10
+    conn = psy.connect(host=host, database=database, user=user, password=password)
+    cursor = conn.cursor()
+    cursor2 = conn.cursor()
+    cursor.execute('SELECT corrected_id FROM player ORDER BY playerid ASC LIMIT %s',[rows_to_collect])
+    cursor2.execute('SELECT ban1,ban2, ban3, ban4, ban5,ban6,ban7,ban8,ban9,ban10 FROM bans ORDER BY banid ASC LIMIT %s',[number_of_matches])
+    row = cursor.fetchone()
+    ban_row = cursor2.fetchone()
+    count = 0
+    while row is not None or ban_row is not None:
+        if count < 5:
+            team1.append(row[0])
+            count += 1
+            row = cursor.fetchone()
+        elif count == 10:
+            count = 0
+            match_list.append((team1, team2, ban_row))
+            team1 = []
+            team2 = []
+            ban_row = cursor2.fetchone()
+        else:
+            team2.append(row[0])
+            count += 1
+            row = cursor.fetchone()
+
+    return match_list
+
 
 def retrieveDataset():
     amountOfChamps = 141
@@ -15,7 +52,7 @@ def retrieveDataset():
     intermediateList = []
     cursor.execute('SELECT p.corrected_id, damage, toughness, control, mobility, utility, difficulty FROM player p JOIN  champions ch ON p.corrected_id = ch.corrected_id ORDER BY playerid ASC')
     row = cursor.fetchone()
-    i=1
+    i = 1
     while row is not None:
         intermediateList.append(row)
         row = cursor.fetchone()
@@ -70,12 +107,14 @@ def retrieveDataset():
     conn.close()
     return dataset, Wins, champions
 
+
 def loadTree(session_id):
     id = session_id
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
     root = cursor.execute('SELECT tree FROM pickled_tree WHERE id = \'{0}\''.format(id))
     return root
+
 
 def insert_winpercents():
     conn = psy.connect(host=host, database=database, user=user, password=password)
@@ -104,6 +143,7 @@ def retrieve_winpercent():
     conn.close()
     return champions
 
+
 def saveTree(tree, id):
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
@@ -113,3 +153,4 @@ def saveTree(tree, id):
     conn.commit()
     cursor.close()
     conn.close()
+

@@ -61,7 +61,7 @@ def post_draft_turn(json, session_id):
     root_node = recall_subtree(state, tree, banned_champs)
     allowed_champions = list.copy(root_node.possible_actions)
     suggestions, reduced_root = run_mcts(15, root_node, True, allowed_champions)
-    db.saveTree(reduced_root, session_id) #Venter sådan set på at træ er gemt til databasen før vi returner suggestions
+    db.saveTree(reduced_root, session_id) #Venter sådan set på at træ er gemt til databasen før vi returnerer suggestions
     json_suggestions = suggestions_to_json(suggestions)
     return json_suggestions
 
@@ -307,9 +307,3 @@ def game_state_from_json(json_object):
     state.enemy_team = enemy_team
 
     return state, set(banned_champs)
-
-state = State()
-state.ally_starting = False
-state.enemy_team = [1]
-state.ally_team = []
-print(is_dual_return(state))
