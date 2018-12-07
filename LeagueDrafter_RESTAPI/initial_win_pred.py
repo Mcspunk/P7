@@ -5,7 +5,7 @@ import os
 # Helper libraries
 import numpy as np
 import os
-import db_connection as db_conn
+import LeagueDrafter_RESTAPI.db_connection as db_conn
 #from LeagueDrafter_RESTAPI.db_connection import dbConnector as db_conn
 
 #db_conn = db("sw703db.cgukp5oibqte.eu-central-1.rds.amazonaws.com", "SW703DB", "sw703", "sw703aoe")
@@ -14,24 +14,21 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 dataset, wins, champions = db_conn.retrieveDataset()
 champions = sorted(champions)
 
-ta = int(len(dataset)*0.7)
-te = int(ta + len(dataset)*0.2)
-
-# --- Find data
-train_data = np.array(dataset[:ta])
-test_data = np.array(dataset[ta:te])
-validate_data = np.array(dataset[te:])
-train_labels = np.array(wins[:ta])
-test_labels = np.array(wins[ta:te])
-validate_labels = np.array(wins[te:])
-
 # --- NN
-def trainModel():
-    model = keras.Sequential([
-        keras.layers.Dense(150, input_shape=(10,8)),
-        keras.layers.Dense(300, activation=tf.nn.relu, kernel_regularizer=keras.regularizers.l1(0.1)),
-        keras.layers.Dense(2, activation=tf.nn.softmax)
-        ])
+#def trainModel():
+#    model = keras.Sequential([
+#        keras.layers.Dense(150, input_shape=(10,8)),
+#        keras.layers.Dense(300, activation=tf.nn.relu, kernel_regularizer=keras.regularizers.l1(0.1)),
+#        keras.layers.Dense(2, activation=tf.nn.softmax)
+#        ])
+#
+#    model.compile(optimizer=keras.optimizers.Adam(lr=0.001, decay=0.1),
+#                 loss='mean_squared_error',
+#                  metrics=['accuracy'],)
+#
+#    model.fit(train_data, train_labels, epochs=5, batch_size=32)
+#    model.save('savedNetwork.h5')
+#    test_loss, test_acc = model.evaluate(test_data, test_labels)
 
     model.compile(optimizer=keras.optimizers.Adam(lr=0.001, decay=0.1),
                  loss='mean_squared_error',

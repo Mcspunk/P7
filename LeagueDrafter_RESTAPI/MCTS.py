@@ -2,8 +2,8 @@ import math
 import random
 import json
 import time
-import initial_win_pred as NN
-import db_connection as db
+import LeagueDrafter_RESTAPI.initial_win_pred as NN
+import LeagueDrafter_RESTAPI.db_connection as db
 EXPLORATION_TERM = 2
 
 
@@ -74,28 +74,32 @@ def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested
         selected_action = select(current_node)
         if not isinstance(selected_action, Node):
             new_node = expand(current_node, selected_action, allowed_champions)
-            simulation_result = simulate(new_node)
+            match_vector = simulate(new_node)
+            simulation_result = NN.predictTeamComp(match_vector)
             backprop(simulation_result, new_node)
             continue
         else:
             current_node = selected_action
             if current_node.depth == 10:
-                simulation_result = simulate(current_node)
+                match_vector = simulate(current_node)
+                simulation_result = NN.predictTeamComp(match_vector)
                 backprop(simulation_result, current_node)
                 current_node = root
 
     suggestions = get_suggestions(root, pair_of_champions, suggested_amount)
+    reduced_root = reduce_root_to_suggestions(root,suggestions)
 
+    return suggestions, reduced_root
+
+
+def reduce_root_to_suggestions(root, suggestions):
     good_children = list()
     for i in root.children:
         for j in suggestions:
             if i.champ == j.champ or i.champ == j.champ2:
                 good_children.append(i)
-
     root.children = good_children
-
-    return suggestions, root
-
+    return root
 
 def get_suggestions(root, pair_of_champions, suggested_amount):
     if pair_of_champions and is_dual_return(root.state):
@@ -211,9 +215,9 @@ def simulate(node):
         action = random.choice(tuple(copied_node.possible_actions))
         copied_node.possible_actions.remove(action)
         copied_node.state = find_new_state(action, copied_node)
-    input_list = list(copied_node.state.ally_team)
-    input_list.extend(list(copied_node.state.enemy_team))
-    return NN.predictTeamComp(input_list)
+    match_vector = list(copied_node.state.ally_team)
+    match_vector.extend(list(copied_node.state.enemy_team))
+    return match_vector
 
 
 def backprop(result, node):
