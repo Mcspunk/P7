@@ -78,7 +78,6 @@ def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested
             match_vector = simulate(new_node)
             simulation_result = NN.predictTeamComp(match_vector)
             backprop(simulation_result, new_node)
-            continue
         else:
             current_node = selected_action
             if current_node.depth == 10:
