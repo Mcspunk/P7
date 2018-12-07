@@ -11,8 +11,8 @@ import json
 from flask_cors import CORS
 from flask import request
 import flask.sessions
-import MCTS as MCTS
-import db_connection as db
+import LeagueDrafter_RESTAPI.MCTS as MCTS
+import LeagueDrafter_RESTAPI.db_connection as db
 
 app = Flask(__name__)
 cors = CORS(app,supports_credentials=True, resources={r"/api/*": {"origins": "*","supports_credentials":True}})

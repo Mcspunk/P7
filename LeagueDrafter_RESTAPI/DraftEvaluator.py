@@ -2,6 +2,7 @@ import LeagueDrafter_RESTAPI.MCTS as MCTS
 import LeagueDrafter_RESTAPI.db_connection as db
 import LeagueDrafter_RESTAPI.initial_win_pred as NN
 import random
+from multiprocessing.dummy import Pool as ThreadPool
 
 champions_sorted_by_winpercent = sorted(db.retrieve_winpercent(), key=lambda tup: tup[1])
 
@@ -64,12 +65,11 @@ def pick_for_ally_team(suggestions, enemy_team, state):
             break
 
 
-def evaluate_MCTS_against_real_matches(number_of_matches, ally_team_starting):
+def evaluate_MCTS_against_real_matches(matches, ally_team_starting=True):
 
     ally_wins = 0
     enemy_wins = 0
-    matches = db.get_matches(number_of_matches)
-
+    total_win_pct = 0
     for match in matches:
         banned_champs = match[2]
         enemy_team = match[1]
@@ -86,13 +86,14 @@ def evaluate_MCTS_against_real_matches(number_of_matches, ally_team_starting):
         input_vector = list.copy(state.ally_team)
         input_vector.extend(list.copy(state.enemy_team))
         result = NN.predictTeamComp(input_vector)
-        print(result)
+        total_win_pct += result
 
         if result > 0.5:
             ally_wins += 1
         else:
             enemy_team += 1
-    return ally_wins, enemy_wins
+    avg_pct = total_win_pct/len(matches)
+    return ally_wins, enemy_wins, avg_pct
 
 def pick_random_champ_enemy(available_champions, state):
     if len(state.ally_team) == 0 or len(state.ally_team) == 5:
@@ -182,10 +183,30 @@ def evaluate_MCTS_against_winpct(number_of_eval):
         ite += 1
     return ally_wins, enemy_wins
 
-#ally, enemy = evaluate_MCTS_against_real_matches(10, True)
-#print("MCTS: ")
-#print(ally)
-#print("Noobs: ")
-#print(enemy)
-#print("\n")
-#print(evaluate_MCTS_against_random(1))
+
+def multi_thread_test(number_of_matches, threads):
+
+    matches = db.get_matches(number_of_matches)
+    interval = number_of_matches / threads
+    start = 0
+    end = interval
+    match_sets = []
+    for index in range(0,threads):
+        match_sets.append(matches[int(start):int(end)])
+        start += interval
+        end += interval
+
+    pool = ThreadPool(threads)
+    results = pool.map(evaluate_MCTS_against_real_matches, match_sets)
+
+    test_results = [0, 0, 0]
+    for result in results:
+        test_results[0] += result[0]
+        test_results[1] += result[1]
+        test_results[2] += result[2]
+    test_results[2] = test_results[2]/len(results)
+    return test_results
+
+
+multi_thread_test(4, 4)
+

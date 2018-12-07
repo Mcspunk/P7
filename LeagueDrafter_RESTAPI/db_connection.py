@@ -1,7 +1,7 @@
 import psycopg2 as psy
 import pickle
 
-host = "restoreddb.cgukp5oibqte.eu-central-1.rds.amazonaws.com"
+host = "sw703db.cgukp5oibqte.eu-central-1.rds.amazonaws.com"
 database = "SW703DB"
 user = "sw703"
 password = "sw703aoe"
@@ -20,8 +20,8 @@ def get_matches(number_of_matches):
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
     cursor2 = conn.cursor()
-    cursor.execute('SELECT corrected_id FROM player ORDER BY playerid ASC LIMIT %s',[rows_to_collect])
-    cursor2.execute('SELECT ban1,ban2, ban3, ban4, ban5,ban6,ban7,ban8,ban9,ban10 FROM bans ORDER BY banid ASC LIMIT %s',[number_of_matches])
+    cursor.execute('SELECT corrected_id FROM aplayer ORDER BY playerid ASC LIMIT %s',[rows_to_collect])
+    cursor2.execute('SELECT ban1,ban2, ban3, ban4, ban5,ban6,ban7,ban8,ban9,ban10 FROM abans ORDER BY banid ASC LIMIT %s',[number_of_matches])
     row = cursor.fetchone()
     ban_row = cursor2.fetchone()
     count = 0
@@ -120,9 +120,9 @@ def insert_winpercents():
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
     for champion_id in range(0,141):
-        cursor.execute('SELECT COUNT(*) FROM player WHERE corrected_id =%s',[champion_id])
+        cursor.execute('SELECT COUNT(*) FROM aplayer WHERE corrected_id =%s',[champion_id])
         totalMatches = cursor.fetchone()[0]
-        cursor.execute('SELECT COUNT(*) FROM player p JOIN playerstats ps ON  p.playerstatsid = ps.playerstatsid'
+        cursor.execute('SELECT COUNT(*) FROM aplayer p JOIN aplayerstats ps ON  p.playerstatsid = ps.playerstatsid'
                               ' WHERE corrected_id =%s AND ps.win = TRUE', [champion_id])
         wins = cursor.fetchone()[0]
         winPercent = (100/totalMatches)*wins
