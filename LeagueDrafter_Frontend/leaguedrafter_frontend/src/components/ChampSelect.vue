@@ -4,7 +4,7 @@
       <ChampSelectTopBar> </ChampSelectTopBar>
     </div>
     <div id="grid-container" v-loading="this.$store.state.loadSuggestions"
-    element-loading-text="Calculating suggestions"
+    :element-loading-text="this.$store.getters.getProgressText"
     element-loading-background="rgba(0, 0, 0, 0.8)">
       <ChampSelectGrid> </ChampSelectGrid>
     </div>

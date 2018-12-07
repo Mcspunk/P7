@@ -54,14 +54,13 @@ class State:
         return len(self.ally_team) + len(self.enemy_team)
 
 
-def post_draft_turn(json, session_id):
-
+def post_draft_turn(json, session_id,exp_time):
     state, banned_champs = game_state_from_json(json)
     tree = db.loadTree(session_id)
     root_node = recall_subtree(state, tree, banned_champs)
     allowed_champions = list.copy(root_node.possible_actions)
-    suggestions, reduced_root = run_mcts(15, root_node, True, allowed_champions)
-    db.saveTree(reduced_root, session_id) #Venter sådan set på at træ er gemt til databasen før vi returner suggestions
+    suggestions, reduced_root = run_mcts(1, root_node, True, allowed_champions)
+    db.saveTree(reduced_root, session_id, exp_time)
     json_suggestions = suggestions_to_json(suggestions)
     return json_suggestions
 

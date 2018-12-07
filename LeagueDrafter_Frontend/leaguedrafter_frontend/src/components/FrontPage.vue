@@ -30,6 +30,17 @@
           <team :isAllyTeam="false"></team>
         </div>
       </md-step>
+      <md-step id="fourth" md-label="Fight" :md-editable="false" :md-done.sync="this.fourthStep">
+        <div class="blueSide">
+          <team :isAllyTeam="true"></team>
+        </div>
+        <div class="statBox">
+          
+        </div>
+        <div class="redSide">
+          <team :isAllyTeam="false"></team>
+        </div>
+      </md-step>
     </md-steppers>
   </div>
 </template>
@@ -77,6 +88,9 @@ export default {
     },
     thirdStep(){
       return this.$store.state.thirdStep
+    },
+    fourthStep(){
+      return this.$store.state.fourthStep
     },
     currentState(){
       return this.$store.getters.getCurrentState

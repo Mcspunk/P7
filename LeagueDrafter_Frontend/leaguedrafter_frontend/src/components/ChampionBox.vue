@@ -1,6 +1,6 @@
 <template>
 <div class="container">
-  <md-card md-with-hover>
+  <md-card>
     <md-ripple>
     <md-card-area>
       <md-card-media md-ratio="1:1">
@@ -44,11 +44,18 @@ export default {
   height: 75px;
   width: 75px;
   background-color: rgba(0, 255, 255, 0);
+  :hover{
+    box-shadow: 0px 1px 20px rgba(255, 255, 255, 0.719);
+    cursor:-webkit-grab
+  }
+  
 }
 img {
   width: 100%;
   height: 100%;
+  
 }
+
 
 .imgGreyScale{
   filter: grayscale(100%);
