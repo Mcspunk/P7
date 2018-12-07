@@ -143,14 +143,35 @@ def retrieve_winpercent():
     conn.close()
     return champions
 
+def retrieve_tress():
+    conn = psy.connect(host=host, database=database, user=user, password=password)
+    cursor = conn.cursor()
+    trees = []
+    cursor.execute('SELECT id,exp_time FROM pickled_tree')
+    tree_row = cursor.fetchone
+    while tree_row is not None:
+        tree_row = cursor.fetchone()
+        if(tree_row != None): trees.append(tree_row)
+    cursor.close()
+    conn.close()
+    if(trees == None): trees = []
+    return trees
 
-def saveTree(tree, id):
+def saveTree(tree, id, exp_time):
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
     pickledTreeId = id
     pickledTree = pickle.dumps(tree, -1)
-    cursor.execute('INSERT INTO pickled_tree(id, tree) VALUES(%s, %s) ON CONFLICT(id) DO UPDATE SET tree = %s',(pickledTreeId, pickledTree, pickledTree))
+    cursor.execute('INSERT INTO pickled_tree(id, tree, exp_time) VALUES(%s, %s, %s) ON CONFLICT(id) DO UPDATE SET tree = %s',(pickledTreeId, pickledTree,exp_time, pickledTree))
     conn.commit()
     cursor.close()
     conn.close()
 
+def deleteTree(id):
+    conn = psy.connect(host=host, database=database, user=user, password=password)
+    cursor = conn.cursor()
+    pickledTreeId = id
+    cursor.execute('DELETE FROM pickled_tree WHERE id = \'{0}\''.format(pickledTreeId))
+    conn.commit()
+    cursor.close()
+    conn.close()

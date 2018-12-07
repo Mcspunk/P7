@@ -3,7 +3,7 @@
   <div class="container">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <div class="categoryTabs">
-      <md-tabs md-alignment="left" @md-changed="tabChanged" :md-active-tab="this.$store.state.activeTab">
+      <md-tabs md-alignment="left" @md-changed="tabChanged" :md-active-tab="this.activeTab">
         <md-tab v-if="this.allyTurn" id="tab-suggestion" md-label="Suggestions" md-icon="verified_user"></md-tab>
         <md-tab id="tab-all" md-label="All" md-icon="verified_user"></md-tab>
         <md-tab id="tab-fighter" md-label="Fighter" md-icon="verified_user"></md-tab>
@@ -14,7 +14,7 @@
         <md-tab id="tab-marksman" md-label="Marksman" md-icon="verified_user"></md-tab>
       </md-tabs>
     </div>
-    <div class="searchBar">
+    <div v-if="activeTab != 'tab-suggestion' " class="searchBar">
       <md-autocomplete id="searchField" v-model="searchTerm" :md-options="this.championNames" :md-open-on-focus="false" @md-changed="searchChanged">
       <label>Search</label>
       </md-autocomplete>
@@ -34,6 +34,7 @@ export default {
   },
   methods:{
     tabChanged:function(id){
+      this.$store.commit('changeTab',{newTabName:id})
       this.currentTag = id.split('-')[1];
       this.$store.commit('filterChampions',{tag:this.currentTag,searchString:this.searchTerm});
     },
@@ -50,7 +51,11 @@ export default {
     },
     allyTurn(){
       return this.$store.state.allyTurn
+    },
+    activeTab(){
+      return this.$store.state.activeTab
     }
+
   }
 }
 </script>

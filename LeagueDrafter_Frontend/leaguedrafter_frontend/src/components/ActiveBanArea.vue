@@ -1,9 +1,9 @@
 <template>
   <div class="outerContainer">
       <h2>Drag'n'Drop banned champions</h2>
-       <Container :should-animate-drop="()=>false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop('placeHolders', $event, placeHolder.id)">
-            <div id="banSlot" @click="removeChampion(placeHolder)">
-              <PlayerSlot :champion="placeHolder.champion" :role="''"></PlayerSlot>
+       <Container :should-animate-drop="()=>false" v-for="placeHolder in banPlaceholders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop('banPlaceholders', $event, placeHolder.id)" @drag-start="onDragStart" @drag-end="onDragEnd">
+            <div  id="banSlot" @click="removeChampion(placeHolder)">
+              <PlayerSlot :displaySetting="displaySetting" :champion="placeHolder.champion" :role="''"></PlayerSlot>
             </div>
       </Container>
       <div class="continueButton">
@@ -20,145 +20,21 @@ export default {
   name: "ActiveBanArea",
   data() {
     return {
-      placeHolders: [
-        {
-          id: 0,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Ban",
-            newId:-1,
-            tags:"Ban"
-          },
-          role: "Top"
-        },
-        {
-          id: 1,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Mid",
-            newId:-1,
-            tags:"MidLaner"
-          },
-          role: "Mid"
-        },
-        {
-          id: 2,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Jungle",
-            newId:-1,
-            tags:"Jungler"
-          },
-          role: "Jungle"
-        },
-        {
-          id: 3,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Support",
-            newId:-1,
-            tags:"Supporter"
-          },
-          role: "Support"
-        },
-        {
-          id: 4,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Bot",
-            newId:-1,
-            tags:"BotLaner"
-          },
-          role: "Bot"
-        },
-        {
-          id: 5,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Bot",
-            newId:-1,
-            tags:"BotLaner"
-          },
-          role: "Bot"
-        },
-        {
-          id: 6,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Bot",
-            newId:-1,
-            tags:"BotLaner"
-          },
-          role: "Bot"
-        },
-        {
-          id: 7,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Bot",
-            newId:-1,
-            tags:"BotLaner"
-          },
-          role: "Bot"
-        },
-        {
-          id: 8,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Bot",
-            newId:-1,
-            tags:"BotLaner"
-          },
-          role: "Bot"
-        },
-        {
-          id: 9,
-          champion: {
-            orgId:-1,
-            imgPath:"Ban_icon.png",
-            name:"Bot",
-            newId:-1,
-            tags:"BotLaner"
-          },
-          role: "Bot"
-        }
-      ],
+      displaySetting:"noShadow"
     };
   },
   methods: {
     onDrop(collection, dropresult, index) {
-      this[collection] = this.applyDrag(this[collection], dropresult, index);
+      this.$store.commit("championBanned",{dropresult:dropresult,placeHolderIndex:index})
     },
-    applyDrag(arr, dragResult,index) {
-      const { removedIndex, addedIndex, payload } = dragResult;
-      if (removedIndex === null && addedIndex === null) return arr;
-
-      const result = [...arr];
-      let itemToAdd = payload;
-
-      if (removedIndex !== null) {
-        itemToAdd = result.splice(removedIndex, 1)[0];
-      }
-
-      if (addedIndex !== null) {
-        if(result[index].champion.newId >= 0)  this.$store.commit('greyScaleChampion',{index:result[index].champion.newId,value:false})
-        this.$store.commit('greyScaleChampion',{index:itemToAdd.newId,value:true})
-        result[index].champion=itemToAdd;
-      }
-
-      return result;
+    onDragStart(){
+      this.displaySetting = "outerShadow"
+    },
+    onDragEnd(){
+      this.displaySetting = "noShadow"
     },
     setDone(arg1,arg2){
-      this.$store.commit('banChampions',{champions:this.placeHolders.filter(placeHolder => placeHolder.champion.newId != -1),ban:true})
+      this.$store.commit('banChampions',{champions:this.banPlaceholders.filter(placeHolder => placeHolder.champion.newId != -1),ban:true})
       this.$store.commit('setStepperDone',{id:arg1,index:arg2})
       this.$store.commit('gotoPickPhase')
       //this.$parent.$parent.methods.setDone(arg1,arg2);
@@ -183,6 +59,9 @@ export default {
     Container
   },
   computed:{
+    banPlaceholders(){
+      return this.$store.state.banPlaceholders
+    }
   }
 };
 </script>
@@ -200,6 +79,7 @@ export default {
     text-align:center;
   }
 }
+
 
 .container{
     margin:5px;
