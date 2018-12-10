@@ -108,9 +108,13 @@ def pick_random_champ_enemy(available_champions, state):
         random_choice = random.choice(available_champions)
         state.enemy_team.append(random_choice)
 
-def evaluate_MCTS_against_random(number_of_eval):
+def evaluate_MCTS_against_random(data):
+
+    number_of_eval = data[0]
+    seed = data[1]
     ally_wins = 0
     enemy_wins = 0
+    total_win_pct = 0
 
     ite = 0
     state = MCTS.State()
@@ -133,8 +137,7 @@ def evaluate_MCTS_against_random(number_of_eval):
         input_vector = list.copy(state.ally_team)
         input_vector.extend(list.copy(state.enemy_team))
         result = NN.predictTeamComp(input_vector)
-        print("Home: ")
-        print(result)
+        total_win_pct += result
         if result > 0.5:
             ally_wins += 1
         else:
@@ -142,12 +145,17 @@ def evaluate_MCTS_against_random(number_of_eval):
         tree = None
         state = MCTS.State()
         ite += 1
-    return ally_wins, enemy_wins
+    avg_pct = total_win_pct / number_of_eval
+    return ally_wins, enemy_wins, avg_pct
 
-def evaluate_MCTS_against_winpct(number_of_eval):
 
+def evaluate_MCTS_against_winpct(data):
+    number_of_eval = data[0]
+    seed = data[1]
     ally_wins = 0
     enemy_wins = 0
+    total_win_pct = 0
+
     ite = 0
     state = MCTS.State()
     state.ally_starting = True
@@ -169,19 +177,17 @@ def evaluate_MCTS_against_winpct(number_of_eval):
         input_vector = list.copy(state.ally_team)
         input_vector.extend(list.copy(state.enemy_team))
         result = NN.predictTeamComp(input_vector)
-        print("Home: ")
-        print(result)
+        total_win_pct += result
         if result > 0.5:
             ally_wins += 1
         elif result < 0.5:
             enemy_wins += 1
-        else:
-            ally_wins += 0
-            enemy_wins += 0
+
         tree = None
         state = MCTS.State()
         ite += 1
-    return ally_wins, enemy_wins
+    avg_pct = total_win_pct / number_of_eval
+    return ally_wins, enemy_wins, avg_pct
 
 
 def multi_thread_test(number_of_matches, threads):
@@ -207,6 +213,67 @@ def multi_thread_test(number_of_matches, threads):
     test_results[2] = test_results[2]/len(results)
     return test_results
 
+def multi_thread_test_random(number_of_matches, threads):
 
-multi_thread_test(4, 4)
+    data1 = (number_of_matches / 4, 1)
+    data2 = (number_of_matches / 4, 2)
+    data3 = (number_of_matches / 4, 3)
+    data4 = (number_of_matches / 4, 4)
+    dataandseeds = [data1, data2, data3, data4]
+
+    pool = ThreadPool(threads)
+    results = pool.map(evaluate_MCTS_against_random, dataandseeds)
+
+    test_results = [0, 0, 0]
+    for result in results:
+        test_results[0] += result[0]
+        test_results[1] += result[1]
+        test_results[2] += result[2]
+    test_results[2] = test_results[2]/len(results)
+    return test_results
+
+def multi_thread_test_highest(number_of_matches, threads):
+
+    data1 = (number_of_matches / 4, 1)
+    data2 = (number_of_matches / 4, 2)
+    data3 = (number_of_matches / 4, 3)
+    data4 = (number_of_matches / 4, 4)
+    dataandseeds = [data1, data2, data3, data4]
+
+    pool = ThreadPool(threads)
+    results = pool.map(evaluate_MCTS_against_winpct, dataandseeds)
+
+    test_results = [0, 0, 0]
+    for result in results:
+        test_results[0] += result[0]
+        test_results[1] += result[1]
+        test_results[2] += result[2]
+    test_results[2] = test_results[2]/len(results)
+    return test_results
+
+filfyr = open("testoutput.txt", "a")
+
+result1 = multi_thread_test(1000, 4)
+filfyr.write("WeWin Real: " + str(result1[0]) + ". TheyWin Real: " + str(result1[1]) + ". Avg win Real: " + str(result1[2]))
+print("WeWin Real")
+print(result1[0])
+print("TheyWin Real")
+print(result1[1])
+print("Avg Real")
+print(result1[2])
+
+result = multi_thread_test_random(1000,4)
+filfyr.write("WeWin Random: " + str(result[0]) + ". TheyWin Random: " + str(result[1]) + ". Avg win Random: " + str(result[2]))
+
+print("WeWin Random")
+print(result[0])
+print("TheyWin Random")
+print(result[1])
+print("Avg Random")
+print(result[2])
+
+result2 = multi_thread_test_highest(1000, 4)
+filfyr.write("WeWin high: " + str(result2[0]) + ". TheyWin high: " + str(result2[1]) + ". Avg win high: " + str(result2[2]))
+
+
 
