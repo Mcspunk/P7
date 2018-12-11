@@ -65,13 +65,13 @@ def post_draft_turn(json, session_id,exp_time):
     return json_suggestions
 
 
-def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=10):
+def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=10,exploration_term=EXPLORATION_TERM):
 
     now = time.time()
     run_till = now.__add__(running_time)
     current_node = root
     while run_till > time.time():
-        selected_action = select(current_node)
+        selected_action = select(current_node, exploration_term)
         if not isinstance(selected_action, Node):
             new_node = expand(current_node, selected_action, allowed_champions)
             match_vector = simulate(new_node)
@@ -145,7 +145,7 @@ def get_allowed_champions(banned_champs=None, already_chosen=None):
             return champions - banned_champs - set(already_chosen)
 
 
-def select(node):
+def select(node,exploration_term):
     if len(node.possible_actions) > 0:
         chosen_action = choose_action(node.possible_actions)
         node.possible_actions.remove(chosen_action)
@@ -155,16 +155,16 @@ def select(node):
         most_promising_child = None
 
         for child in node.children:
-            score = UCT(child)
+            score = UCT(child, exploration_term)
             if best_score < score:
                 best_score = score
                 most_promising_child = child
     return most_promising_child
 
 
-def UCT(node):
+def UCT(node, exploration_term):
     return (float(node.value) / float(node.visited)) + (
-                float(EXPLORATION_TERM) * math.sqrt(math.log(float(node.parent.visited)) / float(node.visited)))
+                float(exploration_term) * math.sqrt(math.log(float(node.parent.visited)) / float(node.visited)))
 
 
 def choose_action(possible_actions):

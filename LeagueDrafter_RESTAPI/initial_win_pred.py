@@ -52,10 +52,10 @@ def predictTeamComp(input):
 
 def createTempComp(input):
     resultTC = np.zeros(141, dtype=int)
-    for i in range(0,5):
+    for i in range(0, 5):
         resultTC[input[i]] = 1
 
-    for i in range(5,10):
+    for i in range(5, 10):
         resultTC[input[i]] = -1
     return resultTC
 
