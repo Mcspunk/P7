@@ -65,6 +65,7 @@ const store = new Vuex.Store({
     roles:["Top","Jungle","Mid","Bot","Support"],
     loading:true,
     activeStepper:'first',
+    allyWinChance:"",
     ally_starting:false,
     firstStep: false,
     secondStep: false,
@@ -90,6 +91,8 @@ const store = new Vuex.Store({
     changeTurn(state){
       if(state.allyTeam.length === 5 && state.enemyTeam.length === 5){
         store.commit('setStepperDone',{id:'thirdStep', index:'fourth'});
+        store.commit('sendFinalState');
+        window.scrollY(0);
       }
       else{
         state.allyTurn = !state.allyTurn
@@ -103,11 +106,17 @@ const store = new Vuex.Store({
         } 
       }
     },
+    sendFinalState(state){
+      Vue.prototype.$http.post(Vue.prototype.$api.NN.postFinalState, store.getters.getCurrentState)
+      .then(response =>{
+        state.allyWinChance = (Math.round((response.data)*10)/10).toFixed(1)
+      })
+    },
     isAllyStarting(state,payload){
       state.ally_starting = payload.value
     },
     sendState(state){
-      var intervalID = window.setInterval(updateLoading, 10);
+      var intervalID = window.setInterval(updateLoading, 100);
 
       function updateLoading() {
         state.progressCounter = state.progressCounter += 1

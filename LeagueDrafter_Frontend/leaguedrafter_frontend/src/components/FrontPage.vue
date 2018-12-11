@@ -20,25 +20,39 @@
 
       <md-step id="third" md-label="Champion select" :md-editable="false" :md-done.sync="this.thirdStep">
         <div class="blueSide">
-          <team :isAllyTeam="true"></team>
+          <team :isAllyTeam="true" :locked="false"></team>
         </div>
         <div class="champArea">
           <InactiveBanArea v-if="bannedChampionCount != 0"> </InactiveBanArea>
           <ChampSelect> </ChampSelect>
         </div>
         <div class="redSide">
-          <team :isAllyTeam="false"></team>
+          <team :isAllyTeam="false" :locked="false"></team>
         </div>
       </md-step>
       <md-step id="fourth" md-label="Fight" :md-editable="false" :md-done.sync="this.fourthStep">
         <div class="blueSide">
-          <team :isAllyTeam="true"></team>
+          <team :isAllyTeam="true" :locked="true"></team>
         </div>
-        <div class="statBox">
-          
+        <div class="champArea">
+          <InactiveBanArea v-if="bannedChampionCount != 0"> </InactiveBanArea>
+          <div class="statBox">
+            <div class="winBorder" id="blueWin">
+              <h2>Chance of victory</h2>
+              <h1>{{allyWinChance}}%</h1>
+            </div>
+            <h1>VS</h1>
+            <div class="winBorder" id="redWin">
+              <h2>Chance of victory</h2>
+              <h1>{{(Math.round((100-allyWinChance)*10)/10).toFixed(1)}}%</h1>
+            </div>
+          </div>
+          <div id="goAgainContainer">
+              <md-button class="md-raised md-primary" @click="refresh">New match</md-button>
+            </div>
         </div>
         <div class="redSide">
-          <team :isAllyTeam="false"></team>
+          <team :isAllyTeam="false" :locked="true"></team>
         </div>
       </md-step>
     </md-steppers>
@@ -65,6 +79,9 @@ export default {
       },
       setDone(idIn){
          this.$store.commit('setStepperDone',{id:idIn});
+      },
+      refresh(){
+        location.reload();
       }
     },
   components:{
@@ -74,6 +91,9 @@ export default {
     InactiveBanArea
   },
   computed:{
+    allyWinChance(){
+      return this.$store.state.allyWinChance;
+    },
     loading(){
       return this.$store.state.loading;
     },
@@ -157,5 +177,66 @@ export default {
   display:flex;
   flex-direction: row;
   justify-content: center;
+}
+
+.statBox{
+  text-align: center;
+  position:relative;
+  width:100%;
+  height:100%;
+  display:inline-block;
+  background-color: rgb(49, 49, 49);
+  div{
+    display: inline-block;
+  }
+  h1{
+   font-size: 50px;
+   display:inline-block;
+   margin-top:18%;
+   text-align: center;
+  }
+  #blueWin{
+    float:left;
+    margin: 20px;
+    margin-top:10%;
+    width: 250px;
+    height: 250px;
+    background: rgba(18, 126, 214, 0);
+    border-width: 5px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: rgb(146, 96, 2);
+    h1{
+      margin-top: 30%;
+      font-size: 50px;
+      color:rgb(27, 130, 247 );
+    }
+  }
+  #redWin{
+    float:right;
+    margin: 20px;
+    margin-top:10%;
+    width: 250px;
+    height: 250px;
+    background: rgba(18, 126, 214, 0);
+    border-width: 5px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: rgb(146, 96, 2);
+    h1{
+      margin-top: 30%;
+      font-size: 50px;
+      color:rgb(253, 59, 59);
+    }
+  }
+}
+#goAgainContainer{
+  margin-top: 5%;
+  margin-left:40%;
+  .md-button{
+    width: 200px;
+    height: 50px;
+  }
+  
 }
 </style>

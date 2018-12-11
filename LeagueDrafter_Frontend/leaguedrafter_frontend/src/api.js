@@ -19,6 +19,9 @@ const apiRoutes = {
     sessions:{
         checkSession: 'get/checksession/',
         createSession: 'post/newsession/'
+    },
+    NN:{
+        postFinalState: 'post/endresult/'
     }
 }
 

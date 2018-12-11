@@ -2,8 +2,8 @@ import math
 import random
 import json
 import time
-import LeagueDrafter_RESTAPI.initial_win_pred as NN
-import LeagueDrafter_RESTAPI.db_connection as db
+import initial_win_pred as NN
+import db_connection as db
 EXPLORATION_TERM = 2
 
 
@@ -59,7 +59,7 @@ def post_draft_turn(json, session_id,exp_time):
     tree = db.loadTree(session_id)
     root_node = recall_subtree(state, tree, banned_champs)
     allowed_champions = list.copy(root_node.possible_actions)
-    suggestions, reduced_root = run_mcts(1, root_node, True, allowed_champions)
+    suggestions, reduced_root = run_mcts(10, root_node, True, allowed_champions)
     db.saveTree(reduced_root, session_id, exp_time)
     json_suggestions = suggestions_to_json(suggestions)
     return json_suggestions

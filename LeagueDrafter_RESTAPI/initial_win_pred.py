@@ -5,8 +5,6 @@ import os
 # Helper libraries
 import numpy as np
 import os
-import LeagueDrafter_RESTAPI.db_connection as db_conn
-#from LeagueDrafter_RESTAPI.db_connection import dbConnector as db_conn
 
 #db_conn = db("sw703db.cgukp5oibqte.eu-central-1.rds.amazonaws.com", "SW703DB", "sw703", "sw703aoe")
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'

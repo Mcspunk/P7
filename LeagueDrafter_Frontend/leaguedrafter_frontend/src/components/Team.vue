@@ -1,9 +1,9 @@
 <template>
-  <div class="OuterContainer" v-loading="!this.myTurn"
+  <div class="OuterContainer" v-loading="!this.myTurn && !locked"
     element-loading-text="Please pick for the other team"
     element-loading-background="rgba(0, 0, 0, 0.8)"
     element-loading-spinner="../assets/roleIcons/Mage_icon.png">
-       <Container class="dropContainer" :should-accept-drop="() => myTurn" :should-animate-drop="() => false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop(placeholderName(), $event, placeHolder.id)">
+       <Container class="dropContainer" :should-accept-drop="() => myTurn && !locked" :should-animate-drop="() => false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop(placeholderName(), $event, placeHolder.id)">
             <div @click="removeChampion(placeHolder)">
               <PlayerSlot :champion="placeHolder.champion" :role="placeHolder.role"></PlayerSlot>
             </div>
@@ -26,8 +26,8 @@ export default {
       this.$store.commit("championChosen",{placeholderName:collection,dropresult:dropresult,placeHolderIndex:index})
     },
     removeChampion(placeHolder){
-      console.log(placeHolder)
-      this.$store.commit('greyScaleChampion',{index:placeHolder.champion.newId,value:false});
+      if(!this.locked){
+        this.$store.commit('greyScaleChampion',{index:placeHolder.champion.newId,value:false});
       this.$store.commit('removeFromTeam',{champion:placeHolder.champion,team:this.isAllyTeam ? "allyTeam":"enemyTeam"})
       placeHolder.champion = {
             orgId:-1,
@@ -36,6 +36,7 @@ export default {
             newId:-1,
             tags:placeHolder.role
           } 
+      }
     },
     placeholderName(){
       if(this.isAllyTeam) return 'allyPlaceholders';

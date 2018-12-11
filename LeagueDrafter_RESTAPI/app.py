@@ -11,8 +11,9 @@ import json
 from flask_cors import CORS
 from flask import request
 import flask.sessions
-import LeagueDrafter_RESTAPI.MCTS as MCTS
-import LeagueDrafter_RESTAPI.db_connection as db
+import MCTS as MCTS
+import db_connection as db
+import initial_win_pred as nn
 
 app = Flask(__name__)
 cors = CORS(app,supports_credentials=True, resources={r"/api/*": {"origins": "*","supports_credentials":True}})
@@ -46,6 +47,17 @@ def clearDb(threadName,delay):
 
 thread1 = myThread(1,"Thread-1",60)
 thread1.start()
+
+@app.route('/api/post/endresult/',methods=['POST'])
+def calculate_end_result():
+    json_data = request.get_json(force=True)
+    feature_vec = []
+    for champion in json_data['ally_team']:
+        feature_vec.append(champion)
+    for champion in json_data['enemy_team']:
+        feature_vec.append(champion)
+    return str(nn.predictTeamComp(feature_vec)*100)
+
 
 @app.route('/api/get/checksession/',methods=['GET'])
 def session_check():
