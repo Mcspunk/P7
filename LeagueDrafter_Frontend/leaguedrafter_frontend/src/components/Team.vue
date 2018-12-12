@@ -27,7 +27,7 @@ export default {
     },
     removeChampion(placeHolder){
       if(!this.locked){
-        this.$store.commit('greyScaleChampion',{index:placeHolder.champion.newId,value:false});
+      this.$store.commit('greyScaleChampion',{index:placeHolder.champion.newId,value:false});
       this.$store.commit('removeFromTeam',{champion:placeHolder.champion,team:this.isAllyTeam ? "allyTeam":"enemyTeam"})
       placeHolder.champion = {
             orgId:-1,
