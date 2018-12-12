@@ -44,18 +44,28 @@ def loadModel():
 
 def predictTeamComp(input):
     #trainModel()
+    allyTeam = input[0:5]
+    enemyTeam = input[5:10]
+    enemyTeam.extend(allyTeam)
     #pred = np.reshape(createTempComp(input), (1,10,8))
-    pred = createTempComp(input)
-    temp = np.array([pred, pred])
-    return trained_model.predict(temp)[0][0]
+    predAlly = createTempComp(input)
+    tempAlly = np.array([predAlly, predAlly])
+    predEnemy = createTempComp(enemyTeam)
+    tempEnemy = np.array([predEnemy,predEnemy])
+    allyFirstResult = trained_model.predict(tempAlly)[0][0]
+    enemyResult = trained_model.predict(tempEnemy)[0][0]
+    normalizer = 1 / (allyFirstResult + enemyResult)
+    allyWin = normalizer*allyFirstResult
+    return allyWin
+
 
 
 def createTempComp(input):
     resultTC = np.zeros(141, dtype=int)
-    for i in range(0,5):
+    for i in range(0, 5):
         resultTC[input[i]] = 1
 
-    for i in range(5,10):
+    for i in range(5, 10):
         resultTC[input[i]] = -1
     return resultTC
 
