@@ -375,17 +375,32 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, threads, exploration_term_
                          + str(test_results[2]) + "\nAlly starting: " + str(ally_starting) + "\n"
     else:
         result_string += "Ally team wins: " + str(test_results[1]) + "\nEnemy team wins: " + str(test_results[0]) + "\nAverage winpercent: " \
-                         + str(test_results[2]) + "\nAlly starting: " + str(ally_starting) + "\n"
+                         + str(1-test_results[2]) + "\nAlly starting: " + str(ally_starting) + "\n"
 
     return result_string
 
 
 file = open("testoutput.txt", "a")
+
 threads_amount = 4
-matches_to_evaluate = 12
-exploration_term_one = 1.5
-exploration_term_two = 2.5
+matches_to_evaluate = 8
+exploration_term_one = 1.3
+exploration_term_two = 1.5
+#To test false 0,5 vs 0,25       0,25 vs 0,125
+
 # First parameter number of matches, second is number of threads, third if ally has starting turn
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 4,0.5,0.25, False)
+file.write(test8)
+print(test8)
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 4,0.25,0.125, False)
+file.write(test8)
+print(test8)
+
+file.close()
+
+
+
 '''
 test1 = multi_thread_test_random(matches_to_evaluate, 4, True)
 file.write(test1)
@@ -398,7 +413,7 @@ print(test2)
 test3 = multi_thread_test_realmatches(matches_to_evaluate, 4, True)
 file.write(test3)
 print(test3)
-'''
+
 test4 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 4,exploration_term_one,exploration_term_two, True)
 file.write(test4)
 print(test4)
@@ -418,3 +433,4 @@ print(test7)
 test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 4,exploration_term_one,exploration_term_two, False)
 file.write(test8)
 print(test8)
+'''
