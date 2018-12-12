@@ -63,13 +63,15 @@ def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested
     now = time.time()
     run_till = now.__add__(running_time)
     current_node = root
-    while run_till > time.time():
+    iteration = 0
+    while iteration < 13200:
         selected_action = select(current_node, exploration_term)
         if not isinstance(selected_action, Node):
             new_node = expand(current_node, selected_action, allowed_champions)
             match_vector = simulate(new_node)
             simulation_result = NN.predictTeamComp(match_vector)
             backprop(simulation_result, new_node)
+            iteration += 1
         else:
             current_node = selected_action
             if current_node.depth == 10:
@@ -77,7 +79,7 @@ def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested
                 simulation_result = NN.predictTeamComp(match_vector)
                 backprop(simulation_result, current_node)
                 current_node = root
-
+                iteration += 1
     suggestions = get_suggestions(root, pair_of_champions, suggested_amount)
     reduced_root = reduce_root_to_suggestions(root,suggestions)
 

@@ -386,14 +386,15 @@ threads_amount = 4
 matches_to_evaluate = 8
 exploration_term_one = 1.3
 exploration_term_two = 1.5
+
 #To test false 0,5 vs 0,25       0,25 vs 0,125
 
 # First parameter number of matches, second is number of threads, third if ally has starting turn
 
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 4,0.5,0.25, False)
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 8, 0.5, 0.25, True)
 file.write(test8)
 print(test8)
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 4,0.25,0.125, False)
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 8, 0.25, 0.125, True)
 file.write(test8)
 print(test8)
 
