@@ -83,8 +83,6 @@ const store = new Vuex.Store({
       state.banPlaceholders = applyDrag(state.banPlaceholders,payload.dropresult,payload.placeHolderIndex)
     },
     championChosen(state,payload){
-      console.log(payload.placeholderName)
-      console.log(state[payload.placeholderName])
       state[payload.placeholderName] = applyDrag(state[payload.placeholderName],payload.dropresult,payload.placeHolderIndex)
 
     },
@@ -173,7 +171,9 @@ const store = new Vuex.Store({
     setupChampions(state, payload){
       payload.forEach(champ => {
         champ = Object.assign({},champ,{
-          picked:false
+          picked:false,
+          banned:false,
+          locked:false,
         })
         state.champions.push(champ)
       });
@@ -227,6 +227,7 @@ const store = new Vuex.Store({
       if(payload.tag === "all") filteredChampions = state.champions;
       else if(payload.tag ==='suggestion'){
         if(state.suggestedChampions.length === 0) state.loadSuggestions = true;
+        payload.searchString = "";
         state.suggestedChampions.forEach(element => {
           filteredChampions.push(element.champ1)
           if(element.champ2 != null) filteredChampions.push(element.champ2)
@@ -238,7 +239,7 @@ const store = new Vuex.Store({
     },
     greyScaleChampion(state,payload){
       var foundChamp = state.champions.find(champ => champ.newId === payload.index)
-      foundChamp.picked = payload.value;
+      foundChamp.banned = payload.value;
       var startIndex = state.filteredChampions.findIndex(champ => champ.newId === payload.index);
       state.filteredChampions.splice(startIndex,1,foundChamp)
     },

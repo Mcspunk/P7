@@ -26,11 +26,11 @@ export default {
   name:"ChampionPairBox",
   methods:{
     determineDraggableChamp1(champion){
-      if(champion.picked) return "undraggable"
+      if(champion.banned || champion.locked) return "undraggable"
       else return ""
     },
     determineDraggableChamp2(champion){
-      if(champion.picked) return "undraggable"
+      if(champion.banned || champion.locked) return "undraggable"
       else return ""
     },
     getPayload:function(index){

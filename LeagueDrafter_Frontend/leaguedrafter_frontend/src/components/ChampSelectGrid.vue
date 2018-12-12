@@ -42,7 +42,7 @@ export default {
       return this.filteredChampions[index]
     },
     determineDraggable(champion){
-      if(champion.picked) return "undraggable"
+      if(champion.banned || champion.locked) return "undraggable"
       else return ""
     },
     banChampion:function(champion){

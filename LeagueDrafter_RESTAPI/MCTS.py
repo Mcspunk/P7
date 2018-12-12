@@ -6,13 +6,11 @@ import initial_win_pred as NN
 import db_connection as db
 EXPLORATION_TERM = 2
 
-
 class Suggestion:
     def __init__(self, champ, score, champ2=None):
         self.champ = champ
         self.score = score
         self.champ2 = champ2
-
 
 class Node:
     def __init__(self, possible_actions, state, parent=None, champ=None):
@@ -37,9 +35,7 @@ class Node:
     def mcts_score(self):
         return self.value/self.visited
 
-
 class State:
-
     def __init__(self, parent=None, ally_starting=None):
         if parent is None:
             self.ally_team = []
@@ -53,7 +49,6 @@ class State:
     def get_turn(self):
         return len(self.ally_team) + len(self.enemy_team)
 
-
 def post_draft_turn(json, session_id,exp_time):
     state, banned_champs = game_state_from_json(json)
     tree = db.loadTree(session_id)
@@ -64,9 +59,7 @@ def post_draft_turn(json, session_id,exp_time):
     json_suggestions = suggestions_to_json(suggestions)
     return json_suggestions
 
-
 def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=10):
-
     now = time.time()
     run_till = now.__add__(running_time)
     current_node = root
@@ -165,7 +158,6 @@ def select(node):
 def UCT(node):
     return (float(node.value) / float(node.visited)) + (
                 float(EXPLORATION_TERM) * math.sqrt(math.log(float(node.parent.visited)) / float(node.visited)))
-
 
 def choose_action(possible_actions):
     chosen_one = random.choice(tuple(possible_actions))
