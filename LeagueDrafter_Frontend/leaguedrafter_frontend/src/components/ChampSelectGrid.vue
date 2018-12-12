@@ -42,11 +42,10 @@ export default {
       return this.filteredChampions[index]
     },
     determineDraggable(champion){
-      if(champion.banned || champion.locked) return "undraggable"
+      if(champion.banned || champion.locked || champion.picked) return "undraggable"
       else return ""
     },
     banChampion:function(champion){
-      console.log(champion)
       if(this.allyTurn === null){
         var firstFreeIndex = this.banPlaceholders.findIndex(placeHolder => placeHolder.champion.newId === -1)
         if(firstFreeIndex != -1){

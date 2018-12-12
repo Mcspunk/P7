@@ -25,7 +25,7 @@ export default {
       return require("../assets/champIcons/" + this.getChampion.imgPath);
     },
     getImgClass(){
-      if(this.champion.banned) return "imgGreyScale"
+      if(this.champion.banned || this.champion.picked) return "imgGreyScale"
       else return ""
     }
   },

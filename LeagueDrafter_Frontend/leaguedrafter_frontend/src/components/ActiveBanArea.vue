@@ -40,7 +40,7 @@ export default {
       //this.$parent.$parent.methods.setDone(arg1,arg2);
     },
     removeChampion(placeHolder){
-      this.$store.commit('greyScaleChampion',{index:placeHolder.champion.newId,value:false});
+      this.$store.commit('greyScaleChampion',{index:placeHolder.champion.newId,value:false,type:"ban"});
       placeHolder.champion = {
             orgId:-1,
             imgPath:"Ban_icon.png",

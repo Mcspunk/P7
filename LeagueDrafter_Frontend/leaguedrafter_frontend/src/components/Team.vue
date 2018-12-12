@@ -26,8 +26,8 @@ export default {
       this.$store.commit("championChosen",{placeholderName:collection,dropresult:dropresult,placeHolderIndex:index})
     },
     removeChampion(placeHolder){
-      if(!this.locked){
-      this.$store.commit('greyScaleChampion',{index:placeHolder.champion.newId,value:false});
+      if(!this.locked && !placeHolder.champion.locked){
+      this.$store.commit('greyScaleChampion',{index:placeHolder.champion.newId,value:false,type:"picked"});
       this.$store.commit('removeFromTeam',{champion:placeHolder.champion,team:this.isAllyTeam ? "allyTeam":"enemyTeam"})
       placeHolder.champion = {
             orgId:-1,
