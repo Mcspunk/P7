@@ -40,6 +40,9 @@ def get_matches(number_of_matches):
             team2.append(row[0])
             count += 1
             row = cursor.fetchone()
+    cursor.close()
+    cursor2.close()
+    conn.close()
 
     return match_list
 
@@ -113,6 +116,8 @@ def loadTree(session_id):
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
     root = cursor.execute('SELECT tree FROM pickled_tree WHERE id = \'{0}\''.format(id))
+    cursor.close()
+    conn.close()
     return root
 
 
