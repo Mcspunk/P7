@@ -1,3 +1,5 @@
+import json
+
 import psycopg2 as psy
 import pickle
 
@@ -135,6 +137,20 @@ def insert_winpercents():
         conn.commit()
     cursor.close()
     conn.close()
+
+def fetch_champions():
+    try:
+        conn = psy.connect(host=host, database=database, user=user, password=password)
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM champions ORDER BY name")
+        rows = cur.fetchall()
+        collection = []
+        for row in rows:
+            collection.append(dict({'name' : row[0], 'orgId':row[1],'newId':row[2],'tags':row[3],'imgPath':row[4]}))
+        cur.close()
+        return json.dumps(collection)
+    except (Exception, psy.DatabaseError) as error:
+        print(error)
 
 
 def retrieve_winpercent():

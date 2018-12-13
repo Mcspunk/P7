@@ -5,7 +5,6 @@ import threading
 
 import jwt
 from random import *
-import psycopg2 as psycopg2
 from flask import Flask, make_response
 import json
 from flask_cors import CORS
@@ -91,26 +90,8 @@ def create_session():
 def hello_world():
     return 'Hello World!'
 
-def fetch_champions():
-    conn = None
-    try:
-        conn = psycopg2.connect(host="sw703db.cgukp5oibqte.eu-central-1.rds.amazonaws.com",database="SW703DB", user="sw703", password="sw703aoe")
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM champions ORDER BY name")
-        rows = cur.fetchall()
-        collection = []
-        for row in rows:
-            collection.append(dict({'name' : row[0], 'orgId':row[1],'newId':row[2],'tags':row[3],'imgPath':row[4]}))
-        cur.close()
-        return json.dumps(collection)
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if conn is not None:
-            conn.close()
 
-
-champions = fetch_champions()
+champions = db.fetch_champions()
 
 @app.route('/api/get/champions/',methods=['GET'])
 def get_champions():
