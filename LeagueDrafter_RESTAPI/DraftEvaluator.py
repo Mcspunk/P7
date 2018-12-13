@@ -2,7 +2,10 @@ import LeagueDrafter_RESTAPI.MCTS as MCTS
 import LeagueDrafter_RESTAPI.db_connection as db
 import LeagueDrafter_RESTAPI.initial_win_pred as NN
 import random
+import datetime
+from joblib import Parallel, delayed
 from multiprocessing.dummy import Pool as ThreadPool
+
 
 champions_sorted_by_winpercent = sorted(db.retrieve_winpercent(), key=lambda tup: tup[1])
 
@@ -159,6 +162,66 @@ def evaluate_MCTS_against_random(data):
     return ally_wins, enemy_wins, avg_pct
 
 
+def MCTS_against_MCTS(data):
+    exploration_one = data[0]
+    exploration_two = data[1]
+    ally_starting = True
+    ally_state = MCTS.State()
+    ally_state.ally_starting = ally_starting
+    enemy_state = MCTS.State()
+    enemy_state.ally_starting = not ally_starting
+    ally_tree = None
+    enemy_tree = None
+    total_win_pct = 0
+    ally_wins = 0
+    enemy_wins = 0
+
+    banned_champs = set(random.sample(range(0, 141), 10))
+    while len(ally_state.enemy_team) < 5 or len(ally_state.ally_team) < 5:
+
+        # Ally Turn
+        ally_tree = MCTS.recall_subtree(ally_state, ally_tree, set(banned_champs))
+        allowed_champions = list.copy(ally_tree.possible_actions)
+        suggestions, reduced_root = MCTS.run_mcts(10, ally_tree, True, allowed_champions, 10, exploration_one)
+        ally_tree = reduced_root
+
+        if suggestions[0].champ2 is None:
+            ally_state.ally_team.append(suggestions[0].champ)
+            enemy_state.enemy_team.append(suggestions[0].champ)
+        else:
+            ally_state.ally_team.append(suggestions[0].champ)
+            ally_state.ally_team.append(suggestions[0].champ2)
+            enemy_state.enemy_team.append(suggestions[0].champ)
+            enemy_state.enemy_team.append(suggestions[0].champ2)
+
+        # Enemy Team
+        enemy_tree = MCTS.recall_subtree(enemy_state, enemy_tree, set(banned_champs))
+        allowed_champions = list.copy(enemy_tree.possible_actions)
+        suggestions, reduced_root = MCTS.run_mcts(10, enemy_tree, True, allowed_champions, 10, exploration_two)
+        enemy_tree = reduced_root
+
+        if suggestions[0].champ2 is None:
+            enemy_state.ally_team.append(suggestions[0].champ)
+            ally_state.enemy_team.append(suggestions[0].champ)
+        else:
+            enemy_state.ally_team.append(suggestions[0].champ)
+            enemy_state.ally_team.append(suggestions[0].champ2)
+            ally_state.enemy_team.append(suggestions[0].champ)
+            ally_state.enemy_team.append(suggestions[0].champ2)
+
+    input_vector = list.copy(ally_state.ally_team)
+    input_vector.extend(list.copy(ally_state.enemy_team))
+    result_from_nn = NN.predictTeamComp(input_vector)
+    total_win_pct += result_from_nn
+
+    if result_from_nn > 0.5:
+        ally_wins += 1
+    else:
+        enemy_wins += 1
+
+    return ally_wins,enemy_wins,result_from_nn
+
+
 def evaluate_MCTS_against_winpct(data):
     number_of_eval = data[0]
     ally_wins = 0
@@ -196,77 +259,6 @@ def evaluate_MCTS_against_winpct(data):
         state = MCTS.State()
         state.ally_starting = ally_starting
     avg_pct = total_win_pct / number_of_eval
-    return ally_wins, enemy_wins, avg_pct
-
-
-def evaluate_MCTS_VS_MCTS(data):
-    number_of_matches = data[0]
-    exploration_term_one = data[1]
-    exploration_term_two = data[2]
-    ally_starting = True
-    ally_state = MCTS.State()
-    ally_state.ally_starting = ally_starting
-    enemy_state = MCTS.State()
-    enemy_state.ally_starting = not ally_starting
-    ally_tree = None
-    enemy_tree = None
-    total_win_pct = 0
-    ally_wins = 0
-    enemy_wins = 0
-
-    for iteration in range(0, number_of_matches):
-        banned_champs = set(random.sample(range(0, 141), 10))
-        while len(ally_state.enemy_team) < 5 or len(ally_state.ally_team) < 5:
-
-            #Ally Turn
-            ally_tree = MCTS.recall_subtree(ally_state, ally_tree, set(banned_champs))
-            allowed_champions = list.copy(ally_tree.possible_actions)
-            suggestions, reduced_root = MCTS.run_mcts(10, ally_tree, True, allowed_champions,10, exploration_term_one)
-            ally_tree = reduced_root
-
-            if suggestions[0].champ2 is None:
-                ally_state.ally_team.append(suggestions[0].champ)
-                enemy_state.enemy_team.append(suggestions[0].champ)
-            else:
-                ally_state.ally_team.append(suggestions[0].champ)
-                ally_state.ally_team.append(suggestions[0].champ2)
-                enemy_state.enemy_team.append(suggestions[0].champ)
-                enemy_state.enemy_team.append(suggestions[0].champ2)
-
-            #Enemy Team
-            enemy_tree = MCTS.recall_subtree(enemy_state, enemy_tree, set(banned_champs))
-            allowed_champions = list.copy(enemy_tree.possible_actions)
-            suggestions, reduced_root = MCTS.run_mcts(10, enemy_tree, True, allowed_champions,10, exploration_term_two)
-            enemy_tree = reduced_root
-
-            if suggestions[0].champ2 is None:
-                enemy_state.ally_team.append(suggestions[0].champ)
-                ally_state.enemy_team.append(suggestions[0].champ)
-            else:
-                enemy_state.ally_team.append(suggestions[0].champ)
-                enemy_state.ally_team.append(suggestions[0].champ2)
-                ally_state.enemy_team.append(suggestions[0].champ)
-                ally_state.enemy_team.append(suggestions[0].champ2)
-
-        input_vector = list.copy(ally_state.ally_team)
-        input_vector.extend(list.copy(ally_state.enemy_team))
-        result_from_nn = NN.predictTeamComp(input_vector)
-        total_win_pct += result_from_nn
-
-        if result_from_nn > 0.5:
-            ally_wins += 1
-        else:
-            enemy_wins += 1
-
-        ally_tree = None
-        ally_state = MCTS.State()
-        ally_state.ally_starting = ally_starting
-
-        enemy_tree = None
-        enemy_state = MCTS.State()
-        enemy_state.ally_starting = not ally_starting
-
-    avg_pct = total_win_pct / number_of_matches
     return ally_wins, enemy_wins, avg_pct
 
 
@@ -349,18 +341,13 @@ def multi_thread_test_highest_winpercent(number_of_matches, threads, ally_starti
     return result_string
 
 
-def multi_thread_test_MCTS_VS_MCTS(number_of_matches, threads, exploration_term_one, exploration_term_two, ally_starting):
-    chunk_size = int(number_of_matches/threads)
-    if ally_starting is True:
-        data = (chunk_size,exploration_term_one,exploration_term_two)
-    else:
-        data = (chunk_size, exploration_term_two, exploration_term_one)
+def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, exploration_term_two, ally_starting):
 
-    pool = ThreadPool(threads)
     datamap = []
-    for i in range(0, threads):
-        datamap.append(data)
-    results = pool.map(evaluate_MCTS_VS_MCTS, datamap)
+    for i in range(0, number_of_matches):
+        datamap.append((exploration_term_one,exploration_term_two))
+
+    results = Parallel(n_jobs=2, verbose=1)(map(delayed(MCTS_against_MCTS), datamap))
 
     test_results = [0, 0, 0]
     for result in results:
@@ -376,28 +363,29 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, threads, exploration_term_
     else:
         result_string += "Ally team wins: " + str(test_results[1]) + "\nEnemy team wins: " + str(test_results[0]) + "\nAverage winpercent: " \
                          + str(1-test_results[2]) + "\nAlly starting: " + str(ally_starting) + "\n"
-
+    print(datetime.datetime.now().time())
     return result_string
 
 
-file = open("testoutput.txt", "a")
 
-threads_amount = 4
-matches_to_evaluate = 8
-exploration_term_one = 1.3
-exploration_term_two = 1.5
+matches_to_evaluate = 4
+
 
 #To test false 0,5 vs 0,25       0,25 vs 0,125
 
 # First parameter number of matches, second is number of threads, third if ally has starting turn
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 8, 0.5, 0.25, True)
+file = open("testoutput.txt", "a")
+print("Start: ")
+print(datetime.datetime.now().time())
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 0.25, 0.5, True)
 file.write(test8)
 print(test8)
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 8, 0.25, 0.125, True)
+file.close()
+
+file = open("testoutput.txt", "a")
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 0.25, 0.5, False)
 file.write(test8)
 print(test8)
-
 file.close()
 
 
