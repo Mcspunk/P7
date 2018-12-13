@@ -347,7 +347,7 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
     for i in range(0, number_of_matches):
         datamap.append((exploration_term_one,exploration_term_two))
 
-    results = Parallel(n_jobs=2, verbose=1)(map(delayed(MCTS_against_MCTS), datamap))
+    results = Parallel(n_jobs=-1, verbose=1)(map(delayed(MCTS_against_MCTS), datamap))
 
     test_results = [0, 0, 0]
     for result in results:
@@ -368,7 +368,7 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
 
 
 
-matches_to_evaluate = 4
+matches_to_evaluate = 500
 
 
 #To test false 0,5 vs 0,25       0,25 vs 0,125
