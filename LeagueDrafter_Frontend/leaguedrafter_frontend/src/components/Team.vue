@@ -3,7 +3,7 @@
     element-loading-text="Please pick for the other team"
     element-loading-background="rgba(0, 0, 0, 0.8)"
     element-loading-spinner="../assets/roleIcons/Mage_icon.png">
-       <Container class="dropContainer" :should-accept-drop="() => myTurn && !locked" :should-animate-drop="() => false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop(placeholderName(), $event, placeHolder.id)">
+       <Container class="dropContainer" :should-accept-drop="() => myTurn && !locked && !placeHolder.champion.locked" :should-animate-drop="() => false" v-for="placeHolder in placeHolders" :key="placeHolder.id" :orientation="'vertical'" behaviour="drop-zone" group-name="champGrid" @drop="onDrop(placeholderName(), $event, placeHolder.id)">
             <div @click="removeChampion(placeHolder)">
               <PlayerSlot :champion="placeHolder.champion" :role="placeHolder.role"></PlayerSlot>
             </div>
