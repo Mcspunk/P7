@@ -262,6 +262,78 @@ def evaluate_MCTS_against_winpct(data):
     return ally_wins, enemy_wins, avg_pct
 
 
+def evaluate_MCTS_VS_MCTS(data):
+    number_of_matches = data[0]
+    exploration_term_one = data[1]
+    exploration_term_two = data[2]
+    ally_starting = True
+    ally_state = MCTS.State()
+    ally_state.ally_starting = ally_starting
+    enemy_state = MCTS.State()
+    enemy_state.ally_starting = not ally_starting
+    ally_tree = None
+    enemy_tree = None
+    total_win_pct = 0
+    ally_wins = 0
+    enemy_wins = 0
+
+    for iteration in range(0, number_of_matches):
+        #print("match: " + str(iteration))
+        banned_champs = set(random.sample(range(0, 141), 10))
+        while len(ally_state.enemy_team) < 5 or len(ally_state.ally_team) < 5:
+
+            #Ally Turn
+            ally_tree = MCTS.recall_subtree(ally_state, ally_tree, set(banned_champs))
+            allowed_champions = list.copy(ally_tree.possible_actions)
+            suggestions, reduced_root = MCTS.run_mcts(10, ally_tree, True, allowed_champions,10, exploration_term_one)
+            ally_tree = reduced_root
+
+            if suggestions[0].champ2 is None:
+                ally_state.ally_team.append(suggestions[0].champ)
+                enemy_state.enemy_team.append(suggestions[0].champ)
+            else:
+                ally_state.ally_team.append(suggestions[0].champ)
+                ally_state.ally_team.append(suggestions[0].champ2)
+                enemy_state.enemy_team.append(suggestions[0].champ)
+                enemy_state.enemy_team.append(suggestions[0].champ2)
+
+            #Enemy Team
+            enemy_tree = MCTS.recall_subtree(enemy_state, enemy_tree, set(banned_champs))
+            allowed_champions = list.copy(enemy_tree.possible_actions)
+            suggestions, reduced_root = MCTS.run_mcts(10, enemy_tree, True, allowed_champions,10, exploration_term_two)
+            enemy_tree = reduced_root
+
+            if suggestions[0].champ2 is None:
+                enemy_state.ally_team.append(suggestions[0].champ)
+                ally_state.enemy_team.append(suggestions[0].champ)
+            else:
+                enemy_state.ally_team.append(suggestions[0].champ)
+                enemy_state.ally_team.append(suggestions[0].champ2)
+                ally_state.enemy_team.append(suggestions[0].champ)
+                ally_state.enemy_team.append(suggestions[0].champ2)
+
+        input_vector = list.copy(ally_state.ally_team)
+        input_vector.extend(list.copy(ally_state.enemy_team))
+        result_from_nn = NN.predictTeamComp(input_vector)
+        total_win_pct += result_from_nn
+
+        if result_from_nn > 0.5:
+            ally_wins += 1
+        else:
+            enemy_wins += 1
+
+        ally_tree = None
+        ally_state = MCTS.State()
+        ally_state.ally_starting = ally_starting
+
+        enemy_tree = None
+        enemy_state = MCTS.State()
+        enemy_state.ally_starting = not ally_starting
+
+    avg_pct = total_win_pct / number_of_matches
+    return ally_wins, enemy_wins, avg_pct
+
+
 def multi_thread_test_realmatches(number_of_matches, threads, ally_starting):
 
     matches = db.get_matches(number_of_matches)
@@ -368,24 +440,201 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
 
 
 
+threads_amount = 4
 matches_to_evaluate = 500
-
-
-#To test false 0,5 vs 0,25       0,25 vs 0,125
+exploration_term_one = 1.3
+exploration_term_two = 1.5
+#To test false 0,5 vs 0,25       0,25 vs 0,125, 0,0625 0,03125 1,41421
 
 # First parameter number of matches, second is number of threads, third if ally has starting turn
+
+'''
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.03125, 0.0625, True)
+file.write(test8)
+print(test8)
+
+file.close()
 file = open("testoutput.txt", "a")
-print("Start: ")
-print(datetime.datetime.now().time())
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 0.25, 0.5, True)
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.03125, 0.0625, False)
+file.write(test8)
+print(test8)
+file.close()
+file = open("testoutput.txt", "a")
+'''
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.0625, 0.125, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.0625, 0.125, False)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.125, 0.25, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.125, 0.25, False)
+file.write(test8)
+print(test8)
+
+file.close()
+
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.25, 0.5, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.25, 0.5, False)
 file.write(test8)
 print(test8)
 file.close()
 
 file = open("testoutput.txt", "a")
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 0.25, 0.5, False)
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.5, 1, True)
 file.write(test8)
 print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.5, 1, False)
+file.write(test8)
+print(test8)
+
+file.close()
+
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1, 1.41420, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1, 1.41420, False)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1.41420, 2, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1.41420, 2, False)
+file.write(test8)
+print(test8)
+
+file.close()
+
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.03125, 0.125, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.3125, 0.125, False)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.06250, 0.25, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.06250, 0.25, False)
+file.write(test8)
+print(test8)
+
+file.close()
+
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.125, 0.5, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.125, 0.5, False)
+file.write(test8)
+print(test8)
+
+file.close()
+
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.25, 1, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.025, 1, False)
+file.write(test8)
+print(test8)
+
+file.close()
+
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.5, 1.4142, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.5, 1.4142, False)
+file.write(test8)
+print(test8)
+
+file.close()
+
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1, 2, True)
+file.write(test8)
+print(test8)
+
+file.close()
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1, 2, False)
+file.write(test8)
+print(test8)
+
 file.close()
 
 

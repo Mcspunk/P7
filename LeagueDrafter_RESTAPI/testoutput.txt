@@ -1,40 +1,10 @@
-*********MCTS-ALLY_exploration_0.25 against MCTS-ENEMY_exploration_0.5**********
-Ally team wins: 1
-Enemy team wins: 1
-Average winpercent: 0.5287118134985073
+*******MCTS-ALLY_exploration_0.0625 against MCTS-ENEMY_exploration_0.125********
+Ally team wins: 226
+Enemy team wins: 274
+Average winpercent: 0.49745495435272025
 Ally starting: True
-*********MCTS-ALLY_exploration_0.25 against MCTS-ENEMY_exploration_0.5**********
-Ally team wins: 0
-Enemy team wins: 2
-Average winpercent: 0.45880845760015265
-Ally starting: True
-*********MCTS-ALLY_exploration_0.25 against MCTS-ENEMY_exploration_0.5**********
-Ally team wins: 1
-Enemy team wins: 1
-Average winpercent: 0.4676133532369091
-Ally starting: False
-*********MCTS-ALLY_exploration_0.25 against MCTS-ENEMY_exploration_0.5**********
-Ally team wins: 2
-Enemy team wins: 0
-Average winpercent: 0.507883593286331
-Ally starting: True
-*********MCTS-ALLY_exploration_0.25 against MCTS-ENEMY_exploration_0.5**********
-Ally team wins: 1
-Enemy team wins: 1
-Average winpercent: 0.5021608416285526
-Ally starting: False
-*********MCTS-ALLY_exploration_0.25 against MCTS-ENEMY_exploration_0.5**********
-Ally team wins: 2
-Enemy team wins: 2
-Average winpercent: 0.5129940902186785
-Ally starting: True
-*********MCTS-ALLY_exploration_0.25 against MCTS-ENEMY_exploration_0.5**********
-Ally team wins: 3
-Enemy team wins: 1
-Average winpercent: 0.5050477378154715
-Ally starting: True
-*********MCTS-ALLY_exploration_0.25 against MCTS-ENEMY_exploration_0.5**********
-Ally team wins: 3
-Enemy team wins: 1
-Average winpercent: 0.5298798708531389
+*******MCTS-ALLY_exploration_0.0625 against MCTS-ENEMY_exploration_0.125********
+Ally team wins: 243
+Enemy team wins: 257
+Average winpercent: 0.49952368130627656
 Ally starting: False
