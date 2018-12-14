@@ -48,10 +48,6 @@ export default {
             newId:-1,
             tags:"Ban"
           } 
-    },
-    containerClass(){
-      if(this.active) return "activeContainers"
-      else return "inactiveContainers"
     }
   },
   components: {
@@ -79,8 +75,6 @@ export default {
     text-align:center;
   }
 }
-
-
 .container{
     margin:5px;
 }
