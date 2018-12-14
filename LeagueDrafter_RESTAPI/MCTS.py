@@ -60,8 +60,6 @@ def post_draft_turn(json, session_id,exp_time):
     return json_suggestions
 
 def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=10,exploration_term=EXPLORATION_TERM):
-    now = time.time()
-    run_till = now.__add__(running_time)
     current_node = root
     iteration = 0
     while iteration < 13200:
@@ -82,7 +80,6 @@ def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested
                 iteration += 1
     suggestions = get_suggestions(root, pair_of_champions, suggested_amount)
     reduced_root = reduce_root_to_suggestions(root,suggestions)
-
     return suggestions, reduced_root
 
 
