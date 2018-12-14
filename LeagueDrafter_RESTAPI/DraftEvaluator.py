@@ -92,8 +92,8 @@ def evaluate_MCTS_against_real_matches(matches):
     total_win_pct = 0
     ally_starting = matches[1]
     for match in matches[0]:
-        enemy_team = match[1]
-        banned_champs = match[2]
+        enemy_team = match[0]
+        banned_champs = match[1]
         state = MCTS.State()
         state.ally_starting = ally_starting
         tree = None
@@ -440,235 +440,24 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
 
 
 
-threads_amount = 4
 matches_to_evaluate = 500
-exploration_term_one = 1.3
-exploration_term_two = 1.5
+
 #To test false 0,5 vs 0,25       0,25 vs 0,125, 0,0625 0,03125 1,41421
 
 # First parameter number of matches, second is number of threads, third if ally has starting turn
 
 '''
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.03125, 0.0625, True)
+file = open("testoutput.txt", "a")
+
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 0.03125, 0.0625, True)
 file.write(test8)
 print(test8)
 
 file.close()
 file = open("testoutput.txt", "a")
 
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.03125, 0.0625, False)
+test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 0.03125, 0.0625, False)
 file.write(test8)
 print(test8)
 file.close()
-file = open("testoutput.txt", "a")
-'''
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.0625, 0.125, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.0625, 0.125, False)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.125, 0.25, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.125, 0.25, False)
-file.write(test8)
-print(test8)
-
-file.close()
-
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.25, 0.5, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.25, 0.5, False)
-file.write(test8)
-print(test8)
-file.close()
-
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.5, 1, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.5, 1, False)
-file.write(test8)
-print(test8)
-
-file.close()
-
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1, 1.41420, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1, 1.41420, False)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1.41420, 2, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1.41420, 2, False)
-file.write(test8)
-print(test8)
-
-file.close()
-
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.03125, 0.125, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.3125, 0.125, False)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.06250, 0.25, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.06250, 0.25, False)
-file.write(test8)
-print(test8)
-
-file.close()
-
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.125, 0.5, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.125, 0.5, False)
-file.write(test8)
-print(test8)
-
-file.close()
-
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.25, 1, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.025, 1, False)
-file.write(test8)
-print(test8)
-
-file.close()
-
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.5, 1.4142, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 0.5, 1.4142, False)
-file.write(test8)
-print(test8)
-
-file.close()
-
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1, 2, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, threads_amount, 1, 2, False)
-file.write(test8)
-print(test8)
-
-file.close()
-
-
-
-'''
-test1 = multi_thread_test_random(matches_to_evaluate, 4, True)
-file.write(test1)
-print(test1)
-
-test2 = multi_thread_test_highest_winpercent(matches_to_evaluate, 4, True)
-file.write(test2)
-print(test2)
-
-test3 = multi_thread_test_realmatches(matches_to_evaluate, 4, True)
-file.write(test3)
-print(test3)
-
-test4 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 4,exploration_term_one,exploration_term_two, True)
-file.write(test4)
-print(test4)
-
-test5 = multi_thread_test_random(matches_to_evaluate, 4, False)
-file.write(test5)
-print(test5)
-
-test6 = multi_thread_test_highest_winpercent(matches_to_evaluate, 4, False)
-file.write(test6)
-print(test6)
-
-test7 = multi_thread_test_realmatches(matches_to_evaluate, 4, False)
-file.write(test7)
-print(test7)
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 4,exploration_term_one,exploration_term_two, False)
-file.write(test8)
-print(test8)
 '''

@@ -20,7 +20,7 @@ def get_matches(number_of_matches):
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
     cursor2 = conn.cursor()
-    cursor.execute('SELECT corrected_id FROM aplayer ORDER BY playerid ASC LIMIT %s',[rows_to_collect])
+    cursor.execute('SELECT corrected_id FROM aplayer, aplayerstats WHERE aplayer.playerstatsid = aplayerstats.playerstatsid AND aplayerstats.win = TRUE ORDER BY playerid ASC LIMIT %s',[rows_to_collect])
     cursor2.execute('SELECT ban1,ban2, ban3, ban4, ban5,ban6,ban7,ban8,ban9,ban10 FROM abans ORDER BY banid ASC LIMIT %s',[number_of_matches])
     row = cursor.fetchone()
     ban_row = cursor2.fetchone()
@@ -30,16 +30,12 @@ def get_matches(number_of_matches):
             team1.append(row[0])
             count += 1
             row = cursor.fetchone()
-        elif count == 10:
-            count = 0
-            match_list.append((team1, team2, ban_row))
-            team1 = []
-            team2 = []
-            ban_row = cursor2.fetchone()
         else:
-            team2.append(row[0])
-            count += 1
-            row = cursor.fetchone()
+            count = 0
+            match_list.append((team1, ban_row))
+            team1 = []
+            ban_row = cursor2.fetchone()
+
     cursor.close()
     cursor2.close()
     conn.close()
@@ -180,3 +176,6 @@ def deleteTree(id):
     conn.commit()
     cursor.close()
     conn.close()
+
+match = get_matches(1)
+print("hej")
