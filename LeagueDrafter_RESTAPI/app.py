@@ -64,7 +64,6 @@ def session_check():
     resp = make_response()
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
     resp.headers['Access-Control-Allow-Origin'] = "http://frontend.leaguedraft.gg"
-
     try:
         payload = jwt.decode(sess_cookie,app.secret_key)
         return resp,200

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
       <div class="roleText">{{this.role}}</div>
-      <ChampionBox :class="this.displaySetting" :champion="this.pvChamp" id="champBox"> </ChampionBox>
+      <ChampionBox :class="this.displaySetting" :champion="this.champion" id="champBox"> </ChampionBox>
   </div>
 </template>
 
@@ -18,12 +18,6 @@ export default {
   },
   components:{
     'ChampionBox' : ChampionBox
-  },
-  computed:{
-    pvChamp: function () {
-      // `this` points to the vm instance
-      return this.champion
-    }
   }
 }
 </script>

@@ -26,11 +26,11 @@ export default {
   name:"ChampionPairBox",
   methods:{
     determineDraggableChamp1(champion){
-      if(champion.banned || champion.locked) return "undraggable"
+      if(champion.banned || champion.locked || champion.picked) return "undraggable"
       else return ""
     },
     determineDraggableChamp2(champion){
-      if(champion.banned || champion.locked) return "undraggable"
+      if(champion.banned || champion.locked || champion.picked) return "undraggable"
       else return ""
     },
     getPayload:function(index){
@@ -42,11 +42,6 @@ export default {
   },
   components:{
     ChampionBox,Draggable,Container
-  },
-  computed:{
-    filteredChampions(){
-      return this.$store.state.filteredChampions
-    }
   }
 }
 </script>

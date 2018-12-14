@@ -5,19 +5,19 @@ import App from './App'
 import router from './router'
 import Vuex from 'vuex'
 import { api, apiRoutes, apiUrl } from './api'
+import 'element-ui/lib/theme-chalk/index.css';
+import { Loading } from 'element-ui'
 import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default-dark.css' // This line here
-import 'element-ui/lib/theme-chalk/index.css';
 import { MdButton, MdTabs, MdIcon, MdSteppers, MdTooltip } from 'vue-material/dist/components'
-import { Loading } from 'element-ui'
 Vue.use(MdButton)
-Vue.use(VueMaterial)
 Vue.use(MdTabs)
 Vue.use(MdIcon)
 Vue.use(MdTooltip)
-Vue.use(Loading)
 Vue.use(MdSteppers)
+Vue.use(Loading)
+Vue.use(VueMaterial)
 Vue.use(Vuex)
 Vue.config.productionTip = false
 
@@ -45,17 +45,20 @@ var applyDrag = function(arr, dragResult,index) {
       if(result[index].champion.newId >= 0)  {
         result[index].champion.picked = false;
         store.commit('greyScaleChampion',{index:result[index].champion.newId,value:false,type:"picked"})
+        store.commit('removeFromTeam',{team:store.state.allyTurn?'allyTeam':'enemyTeam',champion:result[index].champion})
       }
+      var cloneOfItem = JSON.parse(JSON.stringify(itemToAdd));
       store.commit('greyScaleChampion',{index:itemToAdd.newId,value:true,type:"picked"})
       store.commit('addToTeam',{champion:itemToAdd,team:store.state.allyTurn? "allyTeam":"enemyTeam"})
+      result[index].champion=cloneOfItem;
+      console.log(result)
     }
     else{
       if(result[index].champion.newId >= 0)  store.commit('greyScaleChampion',{index:result[index].champion.newId,value:false,type:"ban"})
       store.commit('greyScaleChampion',{index:itemToAdd.newId,value:true,type:"ban"})
+      result[index].champion=itemToAdd;
     }
-    result[index].champion=itemToAdd;
   }
-
   return result;
 }
 
@@ -93,6 +96,7 @@ const store = new Vuex.Store({
     },
     championChosen(state,payload){
       state[payload.placeholderName] = applyDrag(state[payload.placeholderName],payload.dropresult,payload.placeHolderIndex)
+      console.log(state[payload.placeholderName])
     },
     changeTurn(state){
       if(state.allyTeam.length === 5 && state.enemyTeam.length === 5){
@@ -103,14 +107,21 @@ const store = new Vuex.Store({
       else{
         for (let index = 0; index < 5; index++) {
           var newEle = state.allyPlaceholders[index];
-          newEle.champion.locked = true;
-          state.allyPlaceholders.splice(index,1,newEle);
+          if(newEle.champion.newId >= 0){
+            newEle.champion.locked = true;
+            state.champions.find((champ) => champ.newId === newEle.champion.newId).locked = true
+            state.allyPlaceholders.splice(index,1,newEle);
+          }
         }
         for (let index = 0; index < 5; index++) {
           var newEle = state.enemyPlaceholders[index];
-          newEle.champion.locked = true;
-          state.enemyPlaceholders.splice(index,1,newEle);
+          if(newEle.champion.newId >= 0){
+            state.champions.find((champ) => champ.newId === newEle.champion.newId).locked = true
+            newEle.champion.locked = true;
+            state.enemyPlaceholders.splice(index,1,newEle);
+          }
         }
+        console.log(state.champions)
         state.allyTurn = !state.allyTurn
         if(state.allyTurn){
           state.activeTab ="tab-suggestion"
@@ -141,6 +152,7 @@ const store = new Vuex.Store({
           window.clearInterval(intervalID)
         }
       }
+      console.log(store.getters.getCurrentState)
       Vue.prototype.$http.post(Vue.prototype.$api.MCTS.postCurrentState, store.getters.getCurrentState)
       .then(response =>{
         if(response.status === 200){
@@ -173,6 +185,7 @@ const store = new Vuex.Store({
     },
     gotoPickPhase(state){
       state.allyTurn = state.ally_starting;
+
       if(state.ally_starting){
         state.activeTab = "tab-suggestion"
         store.commit('sendState')
@@ -253,21 +266,28 @@ const store = new Vuex.Store({
       } 
       else filteredChampions = state.champions.filter((champion) => champion.tags.toLowerCase().includes(payload.tag));
       filteredChampions = filteredChampions.filter((champion) => champion.name.toLowerCase().includes(payload.searchString.toLowerCase()));
-      state.filteredChampions = filteredChampions.filter((champion) => !champion.locked && !champion.banned);
+      state.filteredChampions = filteredChampions.filter((champion) => !champion.locked && !state.bannedChampions.includes(champion));
+      
     },
     greyScaleChampion(state,payload){
       var foundChamp = state.champions.find(champ => champ.newId === payload.index)
-      var foundChampCopy = JSON.parse(JSON.stringify(foundChamp));
-      if(payload.type === "ban"){
-        foundChamp.banned = payload.value;
+      if(payload.type === "picked") foundChamp.picked = payload.value;
+      if(payload.type === "ban") foundChamp.banned = payload.value;
+      var indexes = []
+      for (let index = 0; index < state.filteredChampions.length; index++) {
+        if(state.filteredChampions[index].newId == payload.index) indexes.push(index);
+      }
+      if(indexes.length > 1){
+        for (let index = 0; index < indexes.length; index++) {
+          var startIndex = indexes[index];
+          state.filteredChampions.splice(startIndex,1,foundChamp)
+        }
+      }
+      else{
         var startIndex = state.filteredChampions.findIndex(champ => champ.newId === payload.index);
         state.filteredChampions.splice(startIndex,1,foundChamp)
       }
-      else if(payload.type === "picked"){
-        foundChampCopy.picked = payload.value;
-        var startIndex = state.filteredChampions.findIndex(champ => champ.newId === payload.index);
-        state.filteredChampions.splice(startIndex,1,foundChampCopy)
-      }
+
     },
     setStepperDone (state,payload) {
       state[payload.id] = true

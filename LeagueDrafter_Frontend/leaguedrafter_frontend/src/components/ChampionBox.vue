@@ -48,15 +48,11 @@ export default {
     box-shadow: 0px 1px 20px rgba(255, 255, 255, 0.719);
     cursor:-webkit-grab
   }
-  
 }
 img {
   width: 100%;
-  height: 100%;
-  
+  height: 100%; 
 }
-
-
 .imgGreyScale{
   filter: grayscale(100%);
 }
