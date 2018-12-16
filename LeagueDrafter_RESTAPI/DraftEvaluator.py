@@ -14,18 +14,24 @@ def pick_champ_enemy_team_winpct(available_champions, state):
     available = list.copy(available_champions)
     if len(state.ally_team) == 0 or len(state.ally_team) == 5:
         for i in champions_sorted_by_winpercent:
-            if i[0] in available_champions:
+            if i[0] in available_champions and i[0] not in state.ally_team:
                 state.enemy_team.append(i[0])
                 break
     else:
-        for i in champions_sorted_by_winpercent:
-            if i[0] in available_champions:
-                state.enemy_team.append(i[0])
-                available.remove(i[0])
-                if onemore is False:
-                    onemore = True
-                if onemore is True:
-                    break
+        champions_selected = 0
+        for champion in champions_sorted_by_winpercent:
+            if champion[0] in available_champions and champions_selected < 2 and champion[0] not in state.ally_team:
+                state.enemy_team.append(champion[0])
+                champions_selected += 1
+
+     #   for i in champions_sorted_by_winpercent:
+     #       if i[0] in available_champions:
+     #           state.enemy_team.append(i[0])
+     #          available.remove(i[0])
+     #           if onemore is False:
+     #               onemore = True
+     #           if onemore is True:
+     #               break
 
 
 def make_random_banns():
@@ -232,6 +238,9 @@ def evaluate_MCTS_against_winpct(data):
     while len(state.enemy_team) < 5 or len(state.ally_team) < 5:
         tree = MCTS.recall_subtree(state, tree, set(banned_champs))
         allowed_champions = list.copy(tree.possible_actions)
+
+        if ally_starting is not True:
+            pick_champ_enemy_team_winpct(allowed_champions, state)
         suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions)
 
         if suggestions[0].champ2 is None:
@@ -239,7 +248,8 @@ def evaluate_MCTS_against_winpct(data):
         else:
             state.ally_team.append(suggestions[0].champ)
             state.ally_team.append(suggestions[0].champ2)
-        pick_champ_enemy_team_winpct(allowed_champions, state)
+        if ally_starting is True:
+            pick_champ_enemy_team_winpct(allowed_champions, state)
     input_vector = list.copy(state.ally_team)
     input_vector.extend(list.copy(state.enemy_team))
     result = NN.predictTeamComp(input_vector)
@@ -418,14 +428,6 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
 
 
 matches_to_evaluate = 500
-
-print(multi_thread_test_realmatches(500,True))
-print(multi_thread_test_highest_winpercent(4,True))
-print(multi_thread_test_random(4,True))
-
-print(multi_thread_test_realmatches(4,False))
-print(multi_thread_test_highest_winpercent(4,False))
-print(multi_thread_test_random(4,False))
 
 #To test false 0,5 vs 0,25       0,25 vs 0,125, 0,0625 0,03125 1,41421
 

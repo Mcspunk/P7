@@ -231,8 +231,6 @@ def find_state_at_turn(node, champ):
 def recall_subtree(state: State, tree, bans):
     search_depth = state.get_turn()
     choices = []
-    if search_depth != 0 and search_depth != 3 and search_depth != 7:
-        print("Stop")
     if state.ally_starting:
         first_pick_team = list(state.ally_team)
         last_pick_team = list(state.enemy_team)
