@@ -429,13 +429,32 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
     return result_string
 
 
-
+expterm = 0.25
 matches_to_evaluate = 500
 
-multi_thread_test_highest_winpercent(matches_to_evaluate,True,144.5)
-multi_thread_test_realmatches(matches_to_evaluate,True,3.2)
-multi_thread_test_random(matches_to_evaluate,True,1.2)
-multi_thread_test_highest_winpercent(matches_to_evaluate,True,2)
+file = open("testoutput.txt", "a")
+result = multi_thread_test_highest_winpercent(matches_to_evaluate,True,expterm)
+file.write(result)
+file.close()
+file = open("testoutput.txt", "a")
+result = multi_thread_test_highest_winpercent(matches_to_evaluate,False,expterm)
+file.write(result)
+file.close()
+file = open("testoutput.txt", "a")
+result = multi_thread_test_realmatches(matches_to_evaluate,True,expterm)
+file.write(result)
+file.close()
+file = open("testoutput.txt", "a")
+result = multi_thread_test_realmatches(matches_to_evaluate,False,expterm)
+file.write(result)
+file.close()
+file = open("testoutput.txt", "a")
+result = multi_thread_test_random(matches_to_evaluate,True,expterm)
+file.write(result)
+file.close()
+file = open("testoutput.txt", "a")
+result = multi_thread_test_random(matches_to_evaluate,False,expterm)
+file.close()
 #To test false 0,5 vs 0,25       0,25 vs 0,125, 0,0625 0,03125 1,41421
 
 # First parameter number of matches, second is number of threads, third if ally has starting turn
