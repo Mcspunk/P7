@@ -16,7 +16,7 @@ def get_matches(number_of_matches):
     team1 = []
     team2 = []
     match_list= []
-    rows_to_collect = number_of_matches*10
+    rows_to_collect = number_of_matches*5
     conn = psy.connect(host=host, database=database, user=user, password=password)
     cursor = conn.cursor()
     cursor2 = conn.cursor()
@@ -176,6 +176,3 @@ def deleteTree(id):
     conn.commit()
     cursor.close()
     conn.close()
-
-match = get_matches(1)
-print("hej")

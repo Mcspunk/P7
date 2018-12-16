@@ -59,10 +59,10 @@ def post_draft_turn(json, session_id,exp_time):
     json_suggestions = suggestions_to_json(suggestions)
     return json_suggestions
 
-def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=10,exploration_term=EXPLORATION_TERM):
+def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=20,exploration_term=EXPLORATION_TERM):
     current_node = root
     iteration = 0
-    while iteration < 13200:
+    while iteration < 1320:
         selected_action = select(current_node, exploration_term)
         if not isinstance(selected_action, Node):
             new_node = expand(current_node, selected_action, allowed_champions)
@@ -231,6 +231,8 @@ def find_state_at_turn(node, champ):
 def recall_subtree(state: State, tree, bans):
     search_depth = state.get_turn()
     choices = []
+    if search_depth != 0 and search_depth != 3 and search_depth != 7:
+        print("Stop")
     if state.ally_starting:
         first_pick_team = list(state.ally_team)
         last_pick_team = list(state.enemy_team)
