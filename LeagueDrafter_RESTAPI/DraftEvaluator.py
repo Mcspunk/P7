@@ -10,8 +10,7 @@ champions_sorted_by_winpercent = sorted(db.retrieve_winpercent(), key=lambda tup
 
 
 def pick_champ_enemy_team_winpct(available_champions, state):
-    onemore = False
-    available = list.copy(available_champions)
+
     if len(state.ally_team) == 0 or len(state.ally_team) == 5:
         for i in champions_sorted_by_winpercent:
             if i[0] in available_champions and i[0] not in state.ally_team:
@@ -100,8 +99,7 @@ def evaluate_MCTS_against_real_matches(data):
             pick_for_enemy_team(enemy_team, state, ally_starting)
         tree = MCTS.recall_subtree(state, tree, set(banned_champs))
         allowed_champions = list.copy(tree.possible_actions)
-        suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
-        tree = reduced_root
+        suggestions, tree = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
         pick_for_ally_team(suggestions, enemy_team, state)
         if ally_starting:
             pick_for_enemy_team(enemy_team, state, ally_starting)
@@ -135,7 +133,7 @@ def evaluate_MCTS_against_random(data):
             pick_random_champ_enemy(allowed_champions, state)
         tree = MCTS.recall_subtree(state, tree, set(banned_champs))
         allowed_champions = list.copy(tree.possible_actions)
-        suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
+        suggestions, tree = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
 
         if suggestions[0].champ2 is None:
             state.ally_team.append(suggestions[0].champ)
@@ -237,7 +235,7 @@ def evaluate_MCTS_against_winpct(data):
 
         if ally_starting is not True:
             pick_champ_enemy_team_winpct(allowed_champions, state)
-        suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
+        suggestions, tree = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
 
         if suggestions[0].champ2 is None:
             state.ally_team.append(suggestions[0].champ)
@@ -426,7 +424,7 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
 
 
 expterm = 0.25
-matches_to_evaluate = 500
+matches_to_evaluate = 2000
 
 file = open("testoutput.txt", "a")
 result = multi_thread_test_highest_winpercent(matches_to_evaluate,True,expterm)
