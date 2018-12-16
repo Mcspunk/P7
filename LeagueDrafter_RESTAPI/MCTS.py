@@ -62,7 +62,7 @@ def post_draft_turn(json, session_id,exp_time):
 def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=20,exploration_term=EXPLORATION_TERM):
     current_node = root
     iteration = 0
-    while iteration < 1320:
+    while iteration < 13200:
         selected_action = select(current_node, exploration_term)
         if not isinstance(selected_action, Node):
             new_node = expand(current_node, selected_action, allowed_champions)

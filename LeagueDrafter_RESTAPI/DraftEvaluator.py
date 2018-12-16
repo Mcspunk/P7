@@ -98,6 +98,7 @@ def evaluate_MCTS_against_real_matches(data):
     enemy_team = data[0][0]
     ally_starting = data[1]
     banned_champs = data[0][1]
+    exploration_term = data[2]
     state = MCTS.State()
     state.ally_starting = ally_starting
     tree = None
@@ -106,7 +107,7 @@ def evaluate_MCTS_against_real_matches(data):
             pick_for_enemy_team(enemy_team, state, ally_starting)
         tree = MCTS.recall_subtree(state, tree, set(banned_champs))
         allowed_champions = list.copy(tree.possible_actions)
-        suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions)
+        suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
         tree = reduced_root
         pick_for_ally_team(suggestions, enemy_team, state)
         if ally_starting:
@@ -128,7 +129,8 @@ def evaluate_MCTS_against_random(data):
     ally_wins = 0
     enemy_wins = 0
     total_win_pct = 0
-    ally_starting = data
+    ally_starting = data[0]
+    exploration_term = data[1]
     state = MCTS.State()
     state.ally_starting = ally_starting
     tree = None
@@ -140,7 +142,7 @@ def evaluate_MCTS_against_random(data):
             pick_random_champ_enemy(allowed_champions, state)
         tree = MCTS.recall_subtree(state, tree, set(banned_champs))
         allowed_champions = list.copy(tree.possible_actions)
-        suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions)
+        suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
 
         if suggestions[0].champ2 is None:
             state.ally_team.append(suggestions[0].champ)
@@ -227,7 +229,8 @@ def evaluate_MCTS_against_winpct(data):
     ally_wins = 0
     enemy_wins = 0
     total_win_pct = 0
-    ally_starting = data
+    ally_starting = data[0]
+    exploration_term = data[1]
     state = MCTS.State()
     state.ally_starting = ally_starting
 
@@ -241,7 +244,7 @@ def evaluate_MCTS_against_winpct(data):
 
         if ally_starting is not True:
             pick_champ_enemy_team_winpct(allowed_champions, state)
-        suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions)
+        suggestions, reduced_root = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
 
         if suggestions[0].champ2 is None:
             state.ally_team.append(suggestions[0].champ)
@@ -334,13 +337,13 @@ def evaluate_MCTS_VS_MCTS(data):
     return ally_wins, enemy_wins, avg_pct
 
 
-def multi_thread_test_realmatches(number_of_matches, ally_starting):
+def multi_thread_test_realmatches(number_of_matches, ally_starting, exploration_term):
 
     matches = db.get_matches(number_of_matches)
     datamap = []
 
     for match in matches:
-        datamap.append((match,ally_starting))
+        datamap.append((match,ally_starting,exploration_term))
 
     results = Parallel(n_jobs=-1, verbose=1)(map(delayed(evaluate_MCTS_against_real_matches), datamap))
 
@@ -350,7 +353,7 @@ def multi_thread_test_realmatches(number_of_matches, ally_starting):
         test_results[1] += result[1]
         test_results[2] += result[2]
     test_results[2] = test_results[2]/len(results)
-    test = "MCTS against REAL_MATCHES - Ally_starting:" + str(ally_starting)
+    test = "MCTS-ALLY_exploration_" + str(exploration_term) + " against Real_matches_RM"
     result_string = test.center(80, '*') + "\n"
     result_string += "Ally team wins: " + str(test_results[0]) + "\nEnemy team wins: " + str(test_results[1]) \
                      + "\nAverage winpercent: " + str(test_results[2]) + "\nAlly starting: " + str(ally_starting) + "\n"
@@ -358,10 +361,10 @@ def multi_thread_test_realmatches(number_of_matches, ally_starting):
 
 
 
-def multi_thread_test_random(number_of_matches, ally_starting):
+def multi_thread_test_random(number_of_matches, ally_starting, exploration_term):
     datamap = []
     for i in range(0, number_of_matches):
-        datamap.append(ally_starting)
+        datamap.append((ally_starting,exploration_term))
 
     results = Parallel(n_jobs=-1, verbose=1)(map(delayed(evaluate_MCTS_against_random), datamap))
 
@@ -371,7 +374,7 @@ def multi_thread_test_random(number_of_matches, ally_starting):
         test_results[1] += result[1]
         test_results[2] += result[2]
     test_results[2] = test_results[2]/len(results)
-    test = "MCTS against RANDOM - Ally_starting:" + str(ally_starting)
+    test = "MCTS-ALLY_exploration_" + str(exploration_term) + " against Random_RT"
     result_string = test.center(80, '*') + "\n"
     result_string += "Ally team wins: " + str(test_results[0]) + "\nEnemy team wins: " + str(test_results[1]) \
                      + "\nAverage winpercent: " + str(test_results[2]) + "\nAlly starting: " + str(ally_starting) + "\n"
@@ -379,11 +382,11 @@ def multi_thread_test_random(number_of_matches, ally_starting):
 
 
 
-def multi_thread_test_highest_winpercent(number_of_matches, ally_starting):
+def multi_thread_test_highest_winpercent(number_of_matches, ally_starting, exploration_term):
     datamap = []
 
     for i in range(0, number_of_matches):
-        datamap.append(ally_starting)
+        datamap.append((ally_starting,exploration_term))
 
     results = Parallel(n_jobs=-1, verbose=1)(map(delayed(evaluate_MCTS_against_winpct), datamap))
 
@@ -393,7 +396,7 @@ def multi_thread_test_highest_winpercent(number_of_matches, ally_starting):
         test_results[1] += result[1]
         test_results[2] += result[2]
     test_results[2] = test_results[2]/len(results)
-    test = "MCTS against HIGHEST_WINPERCENT - Ally_starting:" + str(ally_starting)
+    test = "MCTS-ALLY_exploration_" + str(exploration_term) + " against Highest_winpercent_HW"
     result_string = test.center(80, '*') + "\n"
     result_string += "Ally team wins: " + str(test_results[0]) + "\nEnemy team wins: " + str(test_results[1])\
                      + "\nAverage winpercent: " + str(test_results[2]) + "\nAlly starting: " + str(ally_starting) + "\n"
@@ -429,6 +432,10 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
 
 matches_to_evaluate = 500
 
+multi_thread_test_highest_winpercent(matches_to_evaluate,True,144.5)
+multi_thread_test_realmatches(matches_to_evaluate,True,3.2)
+multi_thread_test_random(matches_to_evaluate,True,1.2)
+multi_thread_test_highest_winpercent(matches_to_evaluate,True,2)
 #To test false 0,5 vs 0,25       0,25 vs 0,125, 0,0625 0,03125 1,41421
 
 # First parameter number of matches, second is number of threads, third if ally has starting turn
