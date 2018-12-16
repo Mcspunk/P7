@@ -16,22 +16,15 @@ def pick_champ_enemy_team_winpct(available_champions, state):
         for i in champions_sorted_by_winpercent:
             if i[0] in available_champions and i[0] not in state.ally_team:
                 state.enemy_team.append(i[0])
+                available_champions.remove(i[0])
                 break
     else:
         champions_selected = 0
         for champion in champions_sorted_by_winpercent:
             if champion[0] in available_champions and champions_selected < 2 and champion[0] not in state.ally_team:
                 state.enemy_team.append(champion[0])
+                available_champions.remove(champion[0])
                 champions_selected += 1
-
-     #   for i in champions_sorted_by_winpercent:
-     #       if i[0] in available_champions:
-     #           state.enemy_team.append(i[0])
-     #          available.remove(i[0])
-     #           if onemore is False:
-     #               onemore = True
-     #           if onemore is True:
-     #               break
 
 
 def make_random_banns():
@@ -248,9 +241,12 @@ def evaluate_MCTS_against_winpct(data):
 
         if suggestions[0].champ2 is None:
             state.ally_team.append(suggestions[0].champ)
+            allowed_champions.remove(suggestions[0].champ)
         else:
             state.ally_team.append(suggestions[0].champ)
+            allowed_champions.remove(suggestions[0].champ)
             state.ally_team.append(suggestions[0].champ2)
+            allowed_champions.remove(suggestions[0].champ2)
         if ally_starting is True:
             pick_champ_enemy_team_winpct(allowed_champions, state)
     input_vector = list.copy(state.ally_team)
