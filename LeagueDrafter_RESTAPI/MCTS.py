@@ -4,7 +4,7 @@ import json
 import time
 import LeagueDrafter_RESTAPI.initial_win_pred as NN
 import LeagueDrafter_RESTAPI.db_connection as db
-EXPLORATION_TERM = 2
+EXPLORATION_TERM = 1
 
 class Suggestion:
     def __init__(self, champ, score, champ2=None):
@@ -60,16 +60,18 @@ def post_draft_turn(json, session_id,exp_time):
     return json_suggestions
 
 def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=20,exploration_term=EXPLORATION_TERM):
+
+    now = time.time()
+    run_till = now.__add__(running_time)
     current_node = root
-    iteration = 0
-    while iteration < 400:
+
+    while run_till > time.time():
         selected_action = select(current_node, exploration_term)
         if not isinstance(selected_action, Node):
             new_node = expand(current_node, selected_action, allowed_champions)
             match_vector = simulate(new_node)
             simulation_result = NN.predictTeamComp(match_vector)
             backprop(simulation_result, new_node)
-            iteration += 1
             current_node = root
         else:
             current_node = selected_action
@@ -78,7 +80,6 @@ def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested
                 simulation_result = NN.predictTeamComp(match_vector)
                 backprop(simulation_result, current_node)
                 current_node = root
-                iteration += 1
 
     suggestions = get_suggestions(root, pair_of_champions, suggested_amount)
     reduced_root = reduce_root_to_suggestions(root,suggestions)
