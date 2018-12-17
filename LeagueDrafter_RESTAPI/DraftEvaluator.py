@@ -398,9 +398,18 @@ def multi_thread_test_highest_winpercent(number_of_matches, ally_starting, explo
 
 def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, exploration_term_two, ally_starting):
 
+    term_one = 0
+    term_two = 0
     datamap = []
+    if  ally_starting:
+        term_one = exploration_term_one
+        term_two = exploration_term_two
+    else:
+        term_one = exploration_term_two
+        term_two = exploration_term_one
+
     for i in range(0, number_of_matches):
-        datamap.append((exploration_term_one,exploration_term_two))
+        datamap.append((term_one, term_two))
 
     results = Parallel(n_jobs=-1, verbose=1)(map(delayed(MCTS_against_MCTS), datamap))
 
