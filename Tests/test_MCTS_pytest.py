@@ -1,7 +1,7 @@
 import LeagueDrafter_RESTAPI.MCTS as mcts
 import pytest
 import json
-
+import LeagueDrafter_RESTAPI.db_connection as dbconn
 
 @pytest.fixture
 def some_state():
@@ -397,3 +397,27 @@ def test_recall_subtree_not_found(recall_tree, some_state3):
     plant_state.enemy_team = [2]
     node = mcts.recall_subtree(some_state3, recall_tree(plant_state), {1})
     assert 0 == node.value
+
+
+def test_run_mcts_suggest(some_state):
+    node = mcts.Node(range(10,80), some_state)
+    suggestions, reduced_root = mcts.run_mcts(1,node,True,range(10,80))
+    assert 10 == len(suggestions)
+
+
+def test_run_mcts_root(some_state2):
+    node = mcts.Node(range(20,90), some_state2)
+    suggestions, reduced_root = mcts.run_mcts(1,node,True,range(20,90))
+    assert isinstance(reduced_root, mcts.Node)
+
+def test_get_matches_tuple():
+    match = dbconn.get_matches(1)
+    assert isinstance(match[0], tuple)
+
+def test_get_matches_team_1():
+    match = dbconn.get_matches(1)
+    assert 5 == len(match[0][0])
+
+def test_get_matches_team_1():
+    match = dbconn.get_matches(1)
+    assert 10 == len(match[0][2])
