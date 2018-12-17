@@ -25,7 +25,7 @@ class Node:
             self.tree_path = set_copy
 
         else:
-            self.depth = 0
+            self.depth = state.get_turn()
             self.tree_path = set()
         self.state = state
         self.possible_actions = list(possible_actions) #from parent
@@ -62,7 +62,7 @@ def post_draft_turn(json, session_id,exp_time):
 def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested_amount=20,exploration_term=EXPLORATION_TERM):
     current_node = root
     iteration = 0
-    while iteration < 13200:
+    while iteration < 400:
         selected_action = select(current_node, exploration_term)
         if not isinstance(selected_action, Node):
             new_node = expand(current_node, selected_action, allowed_champions)
@@ -70,6 +70,7 @@ def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested
             simulation_result = NN.predictTeamComp(match_vector)
             backprop(simulation_result, new_node)
             iteration += 1
+            current_node = root
         else:
             current_node = selected_action
             if current_node.depth == 10:
@@ -78,6 +79,7 @@ def run_mcts(running_time, root, pair_of_champions, allowed_champions, suggested
                 backprop(simulation_result, current_node)
                 current_node = root
                 iteration += 1
+
     suggestions = get_suggestions(root, pair_of_champions, suggested_amount)
     reduced_root = reduce_root_to_suggestions(root,suggestions)
     return suggestions, reduced_root
@@ -87,19 +89,21 @@ def reduce_root_to_suggestions(root, suggestions):
     good_children = list()
     for i in root.children:
         for j in suggestions:
-            if i.champ == j.champ or i.champ == j.champ2:
+            if i.champ == j.champ and j.champ not in map(lambda x: x.champ, good_children):
                 good_children.append(i)
     root.children = good_children
     return root
+
 
 def get_suggestions(root, pair_of_champions, suggested_amount):
     if pair_of_champions and is_dual_return(root.state):
         suggestions = []
         for i in root.children:
             for j in i.children:
-                suggestions.append(Suggestion(j.champ, j.mcts_score(), i.champ))
+                suggestions.append(Suggestion(i.champ, j.mcts_score(), j.champ))
         suggestions.sort(key=lambda x: x.score, reverse=True)
         return suggestions[:suggested_amount]
+        #return suggestions
 
     else:
         suggestions = []
@@ -155,8 +159,9 @@ def select(node,exploration_term):
 
 
 def UCT(node, exploration_term):
-    return (float(node.value) / float(node.visited)) + (
+    result = (float(node.value) / float(node.visited)) + (
                 float(exploration_term) * math.sqrt(math.log(float(node.parent.visited)) / float(node.visited)))
+    return result
 
 def choose_action(possible_actions):
     chosen_one = random.choice(tuple(possible_actions))
@@ -259,14 +264,17 @@ def recall_subtree(state: State, tree, bans):
                 alternate = True
 
     if tree is None:
-        return Node(get_allowed_champions(bans, choices), state)
+        if len(choices) > 0:
+            return Node(get_allowed_champions(bans, choices), state, champ=choices[-1])
+        else:
+            return Node(get_allowed_champions(bans, choices), state)
     else:
         current_turn = tree.depth
         node = tree
         for turn in range(current_turn, search_depth):
             node = find_state_at_turn(node, choices[turn])
             if node is None:
-                node = Node(get_allowed_champions(bans, choices), state)
+                node = Node(get_allowed_champions(bans, choices), state, champ=choices[-1])
                 break
         node.parent = None
     return node

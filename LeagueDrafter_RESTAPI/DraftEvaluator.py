@@ -70,6 +70,7 @@ def pick_for_enemy_team(enemy_team, state, ally_starting):
 
 
 def pick_for_ally_team(suggestions, enemy_team, state):
+    allysize = len(state.ally_team)
     for suggestion in suggestions:
         if suggestion.champ2 is None:
             if suggestion.champ in enemy_team:
@@ -81,6 +82,8 @@ def pick_for_ally_team(suggestions, enemy_team, state):
             state.ally_team.append(suggestion.champ)
             state.ally_team.append(suggestion.champ2)
             break
+    if (allysize == len(state.ally_team)):
+        print("shit")
 
 
 def evaluate_MCTS_against_real_matches(data):
@@ -127,7 +130,7 @@ def evaluate_MCTS_against_random(data):
     tree = None
 
     banned_champs = set(random.sample(range(0, 141), 10))
-    allowed_champions = list(set(range(0,141)) - banned_champs)
+    allowed_champions = MCTS.get_allowed_champions(banned_champs=banned_champs)
     while len(state.enemy_team) < 5 or len(state.ally_team) < 5:
         if not ally_starting:
             pick_random_champ_enemy(allowed_champions, state)
@@ -150,9 +153,6 @@ def evaluate_MCTS_against_random(data):
         ally_wins += 1
     else:
         enemy_wins += 1
-    tree = None
-    state = MCTS.State()
-    state.ally_starting = ally_starting
     return ally_wins, enemy_wins, result
 
 
@@ -228,13 +228,12 @@ def evaluate_MCTS_against_winpct(data):
     tree = None
 
     banned_champs = set(random.sample(range(0, 141), 10))
-
+    allowed_champions = MCTS.get_allowed_champions(banned_champs)
     while len(state.enemy_team) < 5 or len(state.ally_team) < 5:
-        tree = MCTS.recall_subtree(state, tree, set(banned_champs))
-        allowed_champions = list.copy(tree.possible_actions)
-
         if ally_starting is not True:
             pick_champ_enemy_team_winpct(allowed_champions, state)
+        tree = MCTS.recall_subtree(state, tree, set(banned_champs))
+        allowed_champions = list.copy(tree.possible_actions)
         suggestions, tree = MCTS.run_mcts(10, tree, True, allowed_champions, exploration_term=exploration_term)
 
         if suggestions[0].champ2 is None:
@@ -424,47 +423,19 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
 
 
 expterm = 0.25
-matches_to_evaluate = 2000
+matches_to_evaluate = 500
 
+#0.25 vs 3
+
+
+result = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate,1,0.25,True)
+print(result)
 file = open("testoutput.txt", "a")
-result = multi_thread_test_highest_winpercent(matches_to_evaluate,True,expterm)
 file.write(result)
 file.close()
+
+result = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate,1,0.25,False)
+print(result)
 file = open("testoutput.txt", "a")
-result = multi_thread_test_highest_winpercent(matches_to_evaluate,False,expterm)
 file.write(result)
 file.close()
-file = open("testoutput.txt", "a")
-result = multi_thread_test_realmatches(matches_to_evaluate,True,expterm)
-file.write(result)
-file.close()
-file = open("testoutput.txt", "a")
-result = multi_thread_test_realmatches(matches_to_evaluate,False,expterm)
-file.write(result)
-file.close()
-file = open("testoutput.txt", "a")
-result = multi_thread_test_random(matches_to_evaluate,True,expterm)
-file.write(result)
-file.close()
-file = open("testoutput.txt", "a")
-result = multi_thread_test_random(matches_to_evaluate,False,expterm)
-file.close()
-#To test false 0,5 vs 0,25       0,25 vs 0,125, 0,0625 0,03125 1,41421
-
-# First parameter number of matches, second is number of threads, third if ally has starting turn
-
-'''
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 0.03125, 0.0625, True)
-file.write(test8)
-print(test8)
-
-file.close()
-file = open("testoutput.txt", "a")
-
-test8 = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate, 0.03125, 0.0625, False)
-file.write(test8)
-print(test8)
-file.close()
-'''
