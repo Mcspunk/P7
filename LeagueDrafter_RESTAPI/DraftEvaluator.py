@@ -32,16 +32,16 @@ def make_random_banns():
 
 def pick_random_champ_enemy(available_champions, state):
     if len(state.ally_team) == 0 or len(state.ally_team) == 5:
-        random_choice = random.choice(available_champions)
+        random_choice = random.choice(list(available_champions))
         state.enemy_team.append(random_choice)
         available_champions.remove(random_choice)
     else:
         #pick 1
-        random_choice = random.choice(available_champions)
+        random_choice = random.choice(list(available_champions))
         state.enemy_team.append(random_choice)
         #pick 2
         available_champions.remove(random_choice)
-        random_choice = random.choice(available_champions)
+        random_choice = random.choice(list(available_champions))
         state.enemy_team.append(random_choice)
 
         available_champions.remove(random_choice)
@@ -82,8 +82,6 @@ def pick_for_ally_team(suggestions, enemy_team, state):
             state.ally_team.append(suggestion.champ)
             state.ally_team.append(suggestion.champ2)
             break
-    if (allysize == len(state.ally_team)):
-        print("shit")
 
 
 def evaluate_MCTS_against_real_matches(data):
@@ -274,7 +272,6 @@ def evaluate_MCTS_VS_MCTS(data):
     enemy_wins = 0
 
     for iteration in range(0, number_of_matches):
-        #print("match: " + str(iteration))
         banned_champs = set(random.sample(range(0, 141), 10))
         while len(ally_state.enemy_team) < 5 or len(ally_state.ally_team) < 5:
 
@@ -427,24 +424,4 @@ def multi_thread_test_MCTS_VS_MCTS(number_of_matches, exploration_term_one, expl
     else:
         result_string += "Ally team wins: " + str(test_results[1]) + "\nEnemy team wins: " + str(test_results[0]) + "\nAverage winpercent: " \
                          + str(1-test_results[2]) + "\nAlly starting: " + str(ally_starting) + "\n"
-    print(datetime.datetime.now().time())
     return result_string
-
-
-expterm = 0.25
-matches_to_evaluate = 500
-
-#0.25 vs 3
-
-
-result = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate,1,0.25,True)
-print(result)
-file = open("testoutput.txt", "a")
-file.write(result)
-file.close()
-
-result = multi_thread_test_MCTS_VS_MCTS(matches_to_evaluate,1,0.25,False)
-print(result)
-file = open("testoutput.txt", "a")
-file.write(result)
-file.close()
