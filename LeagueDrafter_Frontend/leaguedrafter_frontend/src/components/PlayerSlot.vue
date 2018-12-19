@@ -1,7 +1,7 @@
 <template>
-  <div class="container-redPlayer">
+  <div class="container">
       <div class="roleText">{{this.role}}</div>
-        <ChampionBox :champion="this.pvChamp" id="champBox"> </ChampionBox>
+      <ChampionBox :class="this.displaySetting" :champion="this.champion" id="champBox"> </ChampionBox>
   </div>
 </template>
 
@@ -9,10 +9,9 @@
 import ChampionBox from "./ChampionBox.vue"
 export default {
   name: "PlayerSlot",
-  props: ["champion","role","floatRole"],
+  props: ["champion","role","displaySetting"],
   data (){
     return{
-      pvChamp: this.champion
     }
   },
   methods:{
@@ -25,17 +24,22 @@ export default {
 
 <style lang="scss" scoped>
 
-.container-redPlayer{
+.container{
   position:relative;
-  width:75%;
-  float: left;
-  h3{float: inherit;}
-
-  #champBox{
-    float:left;
+  width:100%;
+  display:block;
+  .roleText{
+    text-align: center;
+    font-size: 20px;
   }
 }
 
+.outerShadow{
+  box-shadow: 0px 1px 10px rgba(255, 255, 255, 0.719);
+}
 
-
+#champBox{
+  width: 75px;
+  height: 75px;
+}
 </style>

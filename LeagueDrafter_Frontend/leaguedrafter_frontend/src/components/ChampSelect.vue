@@ -1,11 +1,14 @@
 <template>
   <div class="container">
     <div>
-      <ChampSelectTopBar :Champions="this.Champions"> </ChampSelectTopBar>
+      <ChampSelectTopBar> </ChampSelectTopBar>
     </div>
-    <div id="grid-container">
-      <ChampSelectGrid :Champions="this.filteredChampions"> </ChampSelectGrid>
-    </div> 
+    <div id="grid-container" v-loading="this.$store.state.loadSuggestions"
+    :element-loading-text="this.$store.getters.getProgressText"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
+      <ChampSelectGrid> </ChampSelectGrid>
+    </div>
+      <md-button id="lock-btn" class="md-raised md-primary" @click="changeTurn" v-if="this.$store.state.allyTurn != null" :disabled="!getValidState">Lock In</md-button>
   </div>
 </template>
 
@@ -16,34 +19,21 @@ import ChampSelectGrid from './ChampSelectGrid.vue'
 export default {
   data(){
     return{
-      filteredChampions:[],
-      Champions: []
     }
   },
   methods:{
-    getChampions: function(){
-        this.$http.get(this.$api.champions.getChampions)
-        .then(response => {
-            this.Champions = response.data;
-            console.log(this.Champions);
-        })
-    },
-    filterChampions:function(tag,searchString){
-      if(tag === "all") this.filteredChampions = this.Champions;
-      else this.filteredChampions = this.Champions.filter((champion) => champion.tags.toLowerCase().includes(tag));
-      this.filteredChampions = this.filteredChampions.filter((champion) => champion.name.toLowerCase().includes(searchString.toLowerCase()));
+    changeTurn(){
+      this.$store.commit('changeTurn')
     }
   },
   components:{
     'ChampSelectTopBar':ChampSelectTopBar,
-    'ChampSelectGrid':ChampSelectGrid
+    'ChampSelectGrid':ChampSelectGrid,
   },
-  created(){
-    this.getChampions();
-    this.filteredChampions = this.Champions;
-  },
-  mounted(){
-    this.filteredChampions = this.Champions;
+  computed:{
+    getValidState(){
+      return this.$store.getters.validState
+    }
   }
 }
 </script>
@@ -55,7 +45,13 @@ export default {
   display:block;
 }
 #grid-container{
-  overflow-y:scroll;
+  background-color: rgb(35, 35, 36);
   height: 500px;
+}
+#lock-btn{
+  margin-left:40%;
+  width:20%;
+  height:75px;
+
 }
 </style>

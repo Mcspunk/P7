@@ -1,0 +1,10 @@
+**********MCTS-ALLY_exploration_1 against MCTS-ENEMY_exploration_0.25***********
+Ally team wins: 196
+Enemy team wins: 304
+Average winpercent: 0.49113506746229985
+Ally starting: True
+**********MCTS-ALLY_exploration_1 against MCTS-ENEMY_exploration_0.25***********
+Ally team wins: 302
+Enemy team wins: 198
+Average winpercent: 0.510033422936483
+Ally starting: False
